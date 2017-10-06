@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+{% from "_form_macros.html" import render_field %}
+<form method="post">
+    <dl>
+        {{ render_field(form.project) }}
+    </dl>
+    <p><input type="submit" value="Start">
+</form>
+
+
+{% endblock %}
+
