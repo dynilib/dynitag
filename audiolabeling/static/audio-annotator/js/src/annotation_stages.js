@@ -118,7 +118,6 @@ StageThreeView.prototype = {
     // Replace the annotation elements with the new elements that contain the
     // tags in the annotationTags list
     updateTagContents: function(annotationTags) {
-        alert("updateTagContent");
         var my = this;
         $('.tag_container', this.dom).empty();
         $.each(annotationTags, function (tagType, tags){
@@ -129,8 +128,6 @@ StageThreeView.prototype = {
 
     // Create annotation tag elements
     createAnnotationTags: function(tagType, tags) {
-
-        alert("createAnnotationTags");
 
         var my = this;
 
@@ -162,7 +159,6 @@ StageThreeView.prototype = {
 
     // Update stage 3 dom with the current regions data
     update: function(region) {
-        alert("stage 3 update");
         this.updateTime(region);
         this.updateSelectedTags(region);
     },
@@ -280,7 +276,7 @@ AnnotationStages.prototype = {
                         return;
                     }
                 });
-                if (hasAllAnnotations) {
+                if (!hasAllAnnotations) {
                     Message.notifyAlert('Make sure all your annotations have a tag!'); 
                     return false;
                 }
@@ -303,6 +299,7 @@ AnnotationStages.prototype = {
 
         // If the user is switch to stage 3, enable drag and resize editing for the new current region. 
         // Also highlight the label and region border
+        this.currentRegion = region;
         if (region) {
             if (newStage === 2) {
                 region.update({drag: false, resize: false});
@@ -312,7 +309,6 @@ AnnotationStages.prototype = {
                 $(region.annotationLabel.element).addClass('current_label');
             }
         }
-        this.currentRegion = region;
     },
 
     clickDeselectCurrentRegion: function() {
@@ -450,7 +446,6 @@ AnnotationStages.prototype = {
 
     // Event handler: Called when a region is selected by dbl clicking the region or its label
     switchToStageThree: function(region) {
-        alert("switchToStageThree");
         if (region !== this.currentRegion) {
             this.trackEvent('select-for-edit', region.id);
             this.updateStage(3, region);
@@ -535,7 +530,6 @@ AnnotationStages.prototype = {
 
     // Event handler: called when a region's tags are added or changed
     updateRegion: function(event, data) {
-        alert("***updateRegion");
         var annotationEventType = null;
         var currentRegion = this.currentRegion;
 

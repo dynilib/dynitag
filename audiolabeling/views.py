@@ -25,7 +25,7 @@ def projects():
 @login_required
 def project(project_id):
     get_url = '/get_task/' + str(project_id)
-    post_url = '/post_annotation/'
+    post_url = '/post_annotation'
     return render_template('project.html',
                            get_url=get_url,
                            post_url = post_url)
@@ -80,11 +80,11 @@ def get_task(project_id):
     return jsonify({"task": data})
 
 
-@app.route('/post_data', methods=['POST'])
+@app.route('/post_annotation', methods=['POST'])
 @login_required
-def post_data():
+def post_annotation():
 
-    print("****in get_data***")
+    print("****in post_annotation***")
 
     data = request.json
     print(data)

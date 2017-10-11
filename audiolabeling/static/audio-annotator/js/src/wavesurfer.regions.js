@@ -196,8 +196,6 @@ WaveSurfer.Region = {
             this.attributes = params.attributes;
         }
         if (null != params.annotation) {
-            alert("in Region.update");
-            alert(JSON.stringify(params));
             this.annotations[params.annotationType] = params.annotation;
         }
 
