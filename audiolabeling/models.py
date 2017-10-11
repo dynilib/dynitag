@@ -153,11 +153,12 @@ class Audio(db.Model):
 class Annotation(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
+    start_time = db.Column(db.Float, nullable=True)
+    end_time = db.Column(db.Float, nullable=True)
     annotationtag_id = db.Column(db.Integer, db.ForeignKey(AnnotationTag.id), nullable=False)
     audio_id = db.Column(db.Integer, db.ForeignKey('audio.id'), nullable=False)
     user_id  = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __repr__(self):
         return '<id {}>'.format(self.id)
-
 
