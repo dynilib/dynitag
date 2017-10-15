@@ -109,6 +109,7 @@ class Project(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     feedbacktype = db.Column(db.Enum(FeedbackType), nullable=False)
     visualizationtype = db.Column(db.Enum(VisualizationType), nullable=False)
+    allowRegions = db.Column(db.Boolean, nullable=True) # TODO set nullable=False
     name = db.Column(db.String, unique=True, nullable=False)
     annotationtags = db.relationship('AnnotationTag',
                                      backref='projects',

@@ -63,11 +63,6 @@ function Annotator() {
     this.playBar = new PlayBar(this.wavesurfer);
     this.playBar.create();
 
-    // Create the annotation stages that appear below the wavesurfer. The stages contain tags 
-    // the users use to label a region in the audio clip
-    this.stages = new AnnotationStages(this.wavesurfer, this.hiddenImage);
-    this.stages.create();
-
     // Create Workflow btns (submit and exit)
     this.workflowBtns = new WorkflowBtns();
     this.workflowBtns.create();
@@ -104,7 +99,9 @@ Annotator.prototype = {
         });
 
         this.wavesurfer.on('click', function (e) {
-            my.stages.clickDeselectCurrentRegion();
+            if (my.stages.allowRegions){
+                my.stages.clickDeselectCurrentRegion();
+            }
         });
     },
 
@@ -129,18 +126,22 @@ Annotator.prototype = {
 
             // Update the different tags the user can use to annotate, also update the solutions to the
             // annotation task if the user is suppose to recieve feedback
-//            var proximityTags = my.currentTask.proximityTag;
             var annotationTags = my.currentTask.annotationTags;
             var alwaysShowTags = my.currentTask.alwaysShowTags;
             var tutorialVideoURL = my.currentTask.tutorialVideoURL;
             var instructions = my.currentTask.instructions;
+            var allowRegions = my.currentTask.allowRegions;
+
+            // Create the annotation stages that appear below the wavesurfer. The stages contain tags 
+            // the users use to label a region in the audio clip
+            my.stages = new AnnotationStages(my.wavesurfer, my.hiddenImage, allowRegions);
+            my.stages.create();
             my.stages.reset(
-//                proximityTags,
                 annotationTags,
                 annotationSolutions,
                 alwaysShowTags
             );
-
+/*
             // set video url
             $('#tutorial-video').attr('src', tutorialVideoURL);
 
@@ -173,7 +174,7 @@ Annotator.prototype = {
                 $('#instructions-container').hide();
                 $('#trigger').hide();
             }
-
+*/
             // Update the visualization type and the feedback type and load in the new audio clip
             my.wavesurfer.params.visualization = my.currentTask.visualization; // invisible, spectrogram, waveform
             my.wavesurfer.params.feedback = my.currentTask.feedback; // hiddenImage, silent, notify, none 

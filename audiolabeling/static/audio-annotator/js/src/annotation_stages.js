@@ -8,14 +8,17 @@
  */
 function StageOneView() {
     this.dom = null;
+    var allowRegions = true;
 }
 
 StageOneView.prototype = {
     // Create dom
-    create: function() {
+    create: function(allowRegions) {
         var my = this;
+        this.allowRegions = allowRegions;
         var container = $('<div>');
 
+/*
         // This btn is for the region online creation mode, not currently appended to the stage one view
         var button = $('<button>', {
             class: 'btn btn_start',
@@ -24,12 +27,17 @@ StageOneView.prototype = {
         button.click(function () {
             $(my).trigger('start-annotation');
         });
+*/
 
-        var time = Util.createSegmentTime();
+        if (this.allowRegions) {
+            var time = Util.createSegmentTime();
+            time.hide();
+            this.dom = container.append([time]);
+        }
+        else{
+            this.dom = container.append([]);
+        }
 
-        time.hide();
-
-        this.dom = container.append([time]);
     },
 
     // Update start and end times. Enable the 'CLICK TO START A NEW ANNOTATION' if the audio is playing
@@ -48,7 +56,7 @@ StageOneView.prototype = {
  * Dependencies:
  *   jQuey, audio-annotator.css
  */
-function StageTwoView() {
+/*function StageTwoView() {
     this.dom = null;
 }
 
@@ -77,7 +85,7 @@ StageTwoView.prototype = {
         $('.duration', this.dom).val(Util.secondsToString(region.end - region.start));
     },
 };
-
+*/
 /*
  * Purpose:
  *   The view the user sees when they have a region selected
@@ -87,32 +95,40 @@ StageTwoView.prototype = {
 function StageThreeView() {
     this.dom = null;
     this.editOptionsDom = null;
+    this.allowRegions = true;
 }
 
 StageThreeView.prototype = {
     // Create dom
-    create: function() {
+    create: function(allowRegions) {
         var my = this;
+        my.allowRegions = allowRegions;
         var container = $('<div>');
 
         var message = $('<div>', {
             class: 'stage_3_message'
         });
 
-        var time = Util.createSegmentTime();
-
-        time.hide();
-
-        var button = $('.audio_visual');
-        button.click(function () {
-            time.show();
-        });
-
         var tagContainer = $('<div>', {
             class: 'tag_container',
         });
-        
-        this.dom = container.append([message, time, tagContainer]);
+
+        if (my.allowRegions){
+
+            var time = Util.createSegmentTime();
+
+            time.hide();
+
+            var button = $('.audio_visual');
+            button.click(function () {
+                time.show();
+            });
+
+            this.dom = container.append([message, time, tagContainer]);
+        }
+        else{
+            this.dom = container.append([message, tagContainer]);
+        }
     },
 
     // Replace the annotation elements with the new elements that contain the
@@ -144,7 +160,7 @@ StageThreeView.prototype = {
 
         tags.forEach(function (tagName) {
             var tag = $('<button>', {
-                class: 'annotation_tag btn disabled',
+                class: 'annotation_tag btn' + (my.allowRegions ? ' disabled' : ''),
                 text: tagName,
             });
             // When a tag is clicked fire the 'change-tag' event with what annotation tag it is
@@ -193,11 +209,11 @@ StageThreeView.prototype = {
  * Dependencies:
  *   jQuey, audio-annotator.css, Wavesurfer (lib/wavesurfer.js), Message (src/message.js)
  */
-function AnnotationStages(wavesurfer, hiddenImage) {
+function AnnotationStages(wavesurfer, hiddenImage, allowRegions) {
     this.currentStage = 0;
     this.currentRegion = null;
     this.stageOneView = new StageOneView();
-    this.stageTwoView = new StageTwoView();
+//    this.stageTwoView = new StageTwoView();
     this.stageThreeView = new StageThreeView();
     this.wavesurfer = wavesurfer;
     this.hiddenImage = hiddenImage;
@@ -207,6 +223,7 @@ function AnnotationStages(wavesurfer, hiddenImage) {
     this.previousF1Score = 0;
     this.events = [];
     this.alwaysShowTags = false;
+    this.allowRegions = allowRegions;
 
     // These are not reset, since they should only be shown for the first clip
     this.shownTagHint = false;
@@ -220,13 +237,13 @@ AnnotationStages.prototype = {
     create: function() {
         // Add events
         this.addStageOneEvents();
-        this.addStageTwoEvents();
+//        this.addStageTwoEvents();
         this.addStageThreeEvents();
         this.addWaveSurferEvents();
 
         // Create dom
         this.stageOneView.create();
-        this.stageTwoView.create();
+//        this.stageTwoView.create();
         this.stageThreeView.create();
 
     },
@@ -312,6 +329,7 @@ AnnotationStages.prototype = {
     },
 
     clickDeselectCurrentRegion: function() {
+
         if (this.blockDeselect) {
             // A new region was created, block the subsequent click to not deselect
             this.blockDeselect = false;
@@ -332,8 +350,11 @@ AnnotationStages.prototype = {
 
     // Switch stages and the current region
     updateStage: function(newStage, region) {
-        // Swap regions 
-        this.swapRegion(newStage, region);
+
+        if (this.allowRegions){
+            // Swap regions
+            this.swapRegion(newStage, region);
+        }
 
         // Update the dom of which ever stage the user is switching to
         var newContent = null;
@@ -377,7 +398,7 @@ AnnotationStages.prototype = {
 
     // Alert users of hints about how to use the interface
     hint: function() {
-        if (this.wavesurfer.regions && Object.keys(this.wavesurfer.regions.list).length === 1) {
+        if (this.allowRegions && this.wavesurfer.regions && Object.keys(this.wavesurfer.regions.list).length === 1) {
             if (this.currentStage === 1 && !this.shownSelectHint) {
                 // If the user deselects a region for the first time and have not seen this hint,
                 // alert them on how to select and deselect a region
@@ -397,7 +418,6 @@ AnnotationStages.prototype = {
     clear: function() {
         this.currentStage = 0;
         this.currentRegion = null;
-        this.usingProximity = false;
         this.annotationSolutions = [];
         this.previousF1Score = 0;
         this.wavesurfer.clearRegions();
@@ -409,11 +429,19 @@ AnnotationStages.prototype = {
     // Reset field values and update the annotation tags and annotation solutions
     reset: function(annotationTags, solution, alwaysShowTags) {
         this.clear();
+
         // Update all Tags' Contents
         this.alwaysShowTags = alwaysShowTags || false;
         this.updateContentsTags(annotationTags);
         // Update solution set
         this.annotationSolutions = solution.annotations || [];
+
+        // if regions are not allowed, disable drag selection and create a unique region
+
+        if (!this.allowRegions) {
+            this.currentRegion = this.wavesurfer.addRegion({}); 
+        }
+
     },
 
     // Update stage 3 dom with new proximity tags and annotation tags
@@ -493,7 +521,7 @@ AnnotationStages.prototype = {
             );
         }
     },
-
+/*
     // Event Handler: For online creation mode, called when the user clicks start creating annotation
     // Creates a region and switches to stage 2 where the region grows as the audio plays
     startAnnotation: function() {
@@ -513,7 +541,7 @@ AnnotationStages.prototype = {
         this.trackEvent('online-create', this.currentRegion.id, null, this.currentRegion.start, this.currentRegion.end);
         this.updateStage(3, this.currentRegion);
     },
-
+*/
     // Event Handler: called when region is deleted
     deleteAnnotation: function(region) {
         // update f1 score and give the user feedback
@@ -754,34 +782,36 @@ AnnotationStages.prototype = {
 
     // Attach event handlers for wavesurfer events
     addWaveSurferEvents: function() {
-        this.wavesurfer.enableDragSelection();
-        this.wavesurfer.on('audioprocess', this.updateEndOfRegion.bind(this));
-        this.wavesurfer.on('audioprocess', this.updateStageOne.bind(this));
-        this.wavesurfer.on('pause', this.updateEndOfRegion.bind(this));
-        this.wavesurfer.on('region-play', this.trackPlayRegion.bind(this));
-        this.wavesurfer.on('region-dblclick', this.switchToStageThree.bind(this));
-        this.wavesurfer.on('label-dblclick', this.switchToStageThree.bind(this));
-        this.wavesurfer.on('region-update-end', this.trackMovement.bind(this));
-        this.wavesurfer.on('region-update-end', this.createRegionSwitchToStageThree.bind(this));
-        this.wavesurfer.on('region-update-end', this.updateStartEndStageThree.bind(this));
-        this.wavesurfer.on('region-updated', this.updateStartEndStageThree.bind(this));
-        this.wavesurfer.on('region-updated', this.updateStageOneWhileCreating.bind(this));
         this.wavesurfer.on('region-updated', this.stageThreeView.updateSelectedTags.bind(this));
-        this.wavesurfer.on('region-created', this.trackBeginingOfRegionCreation.bind(this));
-        this.wavesurfer.on('region-created', this.switchToStageOneOnCreate.bind(this));
-        this.wavesurfer.on('region-removed', this.deleteAnnotation.bind(this));
+        if (this.allowRegions){
+            this.wavesurfer.enableDragSelection();
+            this.wavesurfer.on('audioprocess', this.updateEndOfRegion.bind(this));
+            this.wavesurfer.on('audioprocess', this.updateStageOne.bind(this));
+            this.wavesurfer.on('pause', this.updateEndOfRegion.bind(this));
+            this.wavesurfer.on('region-play', this.trackPlayRegion.bind(this));
+            this.wavesurfer.on('region-dblclick', this.switchToStageThree.bind(this));
+            this.wavesurfer.on('label-dblclick', this.switchToStageThree.bind(this));
+            this.wavesurfer.on('region-update-end', this.trackMovement.bind(this));
+            this.wavesurfer.on('region-update-end', this.createRegionSwitchToStageThree.bind(this));
+            this.wavesurfer.on('region-update-end', this.updateStartEndStageThree.bind(this));
+            this.wavesurfer.on('region-updated', this.updateStartEndStageThree.bind(this));
+            this.wavesurfer.on('region-updated', this.updateStageOneWhileCreating.bind(this));
+            this.wavesurfer.on('region-created', this.trackBeginingOfRegionCreation.bind(this));
+            this.wavesurfer.on('region-created', this.switchToStageOneOnCreate.bind(this));
+            this.wavesurfer.on('region-removed', this.deleteAnnotation.bind(this));
+        }
     },
 
     // Attach event handlers for stage one events
     addStageOneEvents: function() {
-        $(this.stageOneView).on('start-annotation', this.startAnnotation.bind(this));
+//        $(this.stageOneView).on('start-annotation', this.startAnnotation.bind(this));
     },
 
     // Attach event handlers for stage two events
-    addStageTwoEvents: function() {
+/*    addStageTwoEvents: function() {
         $(this.stageTwoView).on('stop-annotation', this.stopAnnotation.bind(this));
     },
-
+*/
     // Attach event handlers for stage three events
     addStageThreeEvents: function() {
         $(this.stageThreeView).on('change-tag', this.updateRegion.bind(this));

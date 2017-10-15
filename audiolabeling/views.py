@@ -62,6 +62,7 @@ def get_task(project_id):
 
         data["feedback"] = proj.feedbacktype.value
         data["visualization"] = proj.visualizationtype.value
+        data["allowRegions"] = proj.allowRegions
         data["annotationTags"] = {}
         for tagtype in tagtypes:
             data["annotationTags"][tagtype.name] = [ann_tag.name for ann_tag in annotation_tags.filter(AnnotationTag.tagtype==tagtype).all()]
@@ -74,7 +75,6 @@ def get_task(project_id):
                         "2. &nbsp; Click the play button and listen to the recording.", 
                         "3. &nbsp; For each sound event that you hear click and drag on the visualization to create a new annotation.",
                         "4. &nbsp; When creating a new annotation be as precise as possible.",
-                        "5. &nbsp; Select the appropriate label and indicate whether the sound is near or far."
                     ]
 
     return jsonify({"task": data})
@@ -89,12 +89,14 @@ def post_annotation():
     data = request.json
     print(data)
 
-    for ann in data["annotations"]:
+    for ann in data["annotations"]["annotations"]:
+    
         annotation = Annotation()
-        annotation.annotationtag_id = 1 # TODO
+        annotation.annotationtag_id = 1
         annotation.audio_id = 1 # TODO
         db.session.add(annotation)
         db.session.commit()
         # TODO commit manage error
         flash('New annotation, added!', 'success')
-        return jsonify({'success':True}), 200, {'ContentType':'application/json'} 
+        return jsonify({'success':True}), 200, {'ContentType':'application/json'}
+
