@@ -95,14 +95,16 @@ class User(db.Model):
         return '<User {}>'.format(self.email)
 
 
+@enum.unique
 class FeedbackType(enum.Enum):
-    NONE = "none"
-    HIDDENIMAGE = "hiddenImage"
+    NONE = 1
+    HIDDENIMAGE = 2
 
 
+@enum.unique
 class VisualizationType(enum.Enum):
-    WAVEFORM = "waveform"
-    SPECTROGRAM = "spectrogram"
+    WAVEFORM = 1
+    SPECTROGRAM = 2
 
 
 class TagType(db.Model):
