@@ -101,7 +101,19 @@ class TagType(db.Model):
                                      lazy='dynamic')
 
     def __repr__(self):
-        return '<id {}>'.format(self.id)
+        return '<name {}>'.format(self.name)
+
+
+audio_project_rel = db.Table('audio_project_rel',
+    db.Column('project_id', db.Integer, db.ForeignKey('project.id'), primary_key=True),
+    db.Column('audio_id', db.Integer, db.ForeignKey('audio.id'), primary_key=True)
+)
+
+
+annotationtag_project_rel = db.Table('annotationtag_project_rel',
+    db.Column('project_id', db.Integer, db.ForeignKey('project.id'), primary_key=True),
+    db.Column('annotationtag_id', db.Integer, db.ForeignKey('annotation_tag.id'), primary_key=True)
+)
 
 
 class Project(db.Model):
@@ -109,40 +121,41 @@ class Project(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     feedbacktype = db.Column(db.Enum(FeedbackType), nullable=False)
     visualizationtype = db.Column(db.Enum(VisualizationType), nullable=False)
-    allowRegions = db.Column(db.Boolean, nullable=True) # TODO set nullable=False
+    allowRegions = db.Column(db.Boolean, nullable=False)
     name = db.Column(db.String, unique=True, nullable=False)
     annotationtags = db.relationship('AnnotationTag',
-                                     backref='projects',
-                                     lazy='dynamic')
+                                     secondary=annotationtag_project_rel,
+                                     lazy='dynamic',
+                                     backref=db.backref('projects', lazy=True))
     audios = db.relationship('Audio',
-                                     backref='projects',
-                                     lazy='dynamic')
-    #result_all = db.Column(JSON)
-    #result_no_stop_words = db.Column(JSON)
+                             secondary=audio_project_rel,
+                             lazy='dynamic',
+                             backref=db.backref('projects', lazy=True))
+    annotations = db.relationship('Annotation',
+                                  backref='project',
+                                  lazy='dynamic')
 
     def __repr__(self):
-        return '<id {}>'.format(self.id)
+        return '<name {}>'.format(self.name)
 
 
 class AnnotationTag(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     tagtype_id = db.Column(db.Integer, db.ForeignKey(TagType.id), nullable=False)
-    project_id = db.Column(db.Integer, db.ForeignKey(Project.id), nullable=False)
     name = db.Column(db.String, unique=True, nullable=False)
     annotations = db.relationship('Annotation',
                                   backref='annotationtag',
                                   lazy='dynamic')
 
     def __repr__(self):
-        return '<id {}>'.format(self.id)
+        return '<name {}>'.format(self.name)
 
 
 class Audio(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     url = db.Column(db.String, unique=True, nullable=False)
-    project_id = db.Column(db.Integer, db.ForeignKey(Project.id), nullable=False)
     annotations = db.relationship('Annotation',
                                   backref='audio',
                                   lazy='dynamic')
@@ -157,6 +170,7 @@ class Annotation(db.Model):
     start_time = db.Column(db.Float, nullable=True)
     end_time = db.Column(db.Float, nullable=True)
     annotationtag_id = db.Column(db.Integer, db.ForeignKey(AnnotationTag.id), nullable=False)
+    project_id = db.Column(db.Integer, db.ForeignKey('project.id'), nullable=False)
     audio_id = db.Column(db.Integer, db.ForeignKey('audio.id'), nullable=False)
     user_id  = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 

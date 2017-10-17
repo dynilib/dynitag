@@ -47,19 +47,21 @@ def get_task(project_id):
     print("Project id: " + project_id)
 
     # get random audio from project with no annotations from current user
+    # (might be optimized using project.audios)
     audio = Audio.query.order_by(func.random())\
-        .filter(Audio.project_id==project_id)\
+        .filter(Audio.projects.any(Project.id==project_id))\
         .filter(~Audio.annotations.any(Annotation.user_id==1))\
         .first()
 
     if audio:
 
         proj = Project.query.get(project_id)
-        annotation_tags = AnnotationTag.query.filter(project_id==project_id)
+        annotation_tags = proj.annotationtags
         tagtypes = annotation_tags.with_entities(TagType).all()
 
         data = {}
 
+        data["project_id"] = project_id
         data["feedback"] = proj.feedbacktype.value
         data["visualization"] = proj.visualizationtype.value
         data["allowRegions"] = proj.allowRegions
