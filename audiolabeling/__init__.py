@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_admin import Admin
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_mail import Mail
@@ -25,12 +26,21 @@ from . import models
 def load_user(user_id):
     return models.User.query.filter(models.User.id == int(user_id)).first()
 
-####################
-#### blueprints ####
-####################
+##############
+# blueprints #
+##############
 
 from audiolabeling.users.views import users_blueprint
 
 # register the blueprints
 app.register_blueprint(users_blueprint, url_prefix='/users')
 
+###############
+# flask-admin #
+###############
+
+admin = Admin(app, name='Audiolabeling', template_mode='bootstrap3')
+admin.add_view(models.AdminModelView(models.User, db.session))
+admin.add_view(models.AdminModelView(models.TagType, db.session))
+admin.add_view(models.AdminModelView(models.AnnotationTag, db.session))
+admin.add_view(models.AdminModelView(models.Project, db.session))

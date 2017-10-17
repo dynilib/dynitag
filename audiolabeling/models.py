@@ -1,8 +1,21 @@
 import enum
 from datetime import datetime
+from flask import redirect, request, url_for
 from sqlalchemy.ext.hybrid import hybrid_method, hybrid_property
+from flask_admin.contrib.sqla import ModelView
+from flask_login import current_user
 
-from audiolabeling import db, bcrypt
+from audiolabeling import db, bcrypt, login_manager
+
+
+class AdminModelView(ModelView):
+
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.role=="admin"
+
+    def inaccessible_callback(self, name, **kwargs):
+        # redirect to login page if user doesn't have access
+        return redirect(url_for(login_manager.login_view, next=request.url))
 
 
 class User(db.Model):
