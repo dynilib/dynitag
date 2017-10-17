@@ -45,13 +45,17 @@ def get_task(project_id):
 
     print("User: " + current_user.email)
     print("Project id: " + project_id)
+    print(current_user.is_authenticated)
+    print(current_user.role)
 
     # get random audio from project with no annotations from current user
     # (might be optimized using project.audios)
     audio = Audio.query.order_by(func.random())\
         .filter(Audio.projects.any(Project.id==project_id))\
-        .filter(~Audio.annotations.any(Annotation.user_id==1))\
+        .filter(~Audio.annotations.any(Annotation.user_id==current_user.id))\
         .first()
+
+    data = {}
 
     if audio:
 
@@ -59,10 +63,9 @@ def get_task(project_id):
         annotation_tags = proj.annotationtags
         tagtypes = annotation_tags.with_entities(TagType).all()
 
-        data = {}
 
         data["project_id"] = project_id
-        data["audio_id"] = audio_id
+        data["audio_id"] = audio.id
         data["feedback"] = proj.feedbacktype.value
         data["visualization"] = proj.visualizationtype.value
         data["allowRegions"] = proj.allowRegions
@@ -92,14 +95,32 @@ def post_annotation():
     data = request.json
     print(data)
 
-    for ann in data["annotations"]["annotations"]:
+    audio_id = data["audio_id"]
+    project_id = data["project_id"]
+
+    for region in data["annotations"]:
+
+        start_time = region["start"]
+        end_time = region["end"]
+
+        print(type(region["annotations"]))
+        print(region["annotations"])
+
+        for _, v in region["annotations"].items():
+            
+            print(v)
     
-        annotation = Annotation()
-        annotation.annotationtag_id = 1
-        annotation.audio_id = 1 # TODO
-        db.session.add(annotation)
-        db.session.commit()
-        # TODO commit manage error
-        flash('New annotation, added!', 'success')
-        return jsonify({'success':True}), 200, {'ContentType':'application/json'}
+            ann = Annotation()
+            ann.annotationtag_id = AnnotationTag.query.filter(AnnotationTag.name==v)[0].id
+            ann.audio_id = audio_id
+            ann.project_id = project_id
+            ann.user_id = current_user.id
+            ann.start_time = start_time
+            ann.end_time = end_time
+            db.session.add(ann)
+            db.session.commit()
+            # TODO commit manage error
+
+    flash('New annotation, added!', 'success')
+    return jsonify({'success':True}), 200, {'ContentType':'application/json'}
 
