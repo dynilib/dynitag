@@ -90,8 +90,6 @@ def get_task(project_id):
 @login_required
 def post_annotation():
 
-    print("****in post_annotation***")
-
     data = request.json
     print(data)
 
@@ -103,13 +101,8 @@ def post_annotation():
         start_time = region["start"]
         end_time = region["end"]
 
-        print(type(region["annotations"]))
-        print(region["annotations"])
-
         for _, v in region["annotations"].items():
             
-            print(v)
-    
             ann = Annotation()
             ann.annotationtag_id = AnnotationTag.query.filter(AnnotationTag.name==v)[0].id
             ann.audio_id = audio_id
