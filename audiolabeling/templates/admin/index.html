@@ -1,0 +1,29 @@
+{% extends 'admin/master.html' %}
+i{% from "_form_macros.html" import render_field %}
+
+{% block body %}
+
+<div id="create_project">
+    Create project
+    <form method="POST" action="create_project">
+        {{ createproject_form.csrf_token }}
+        {{ render_field(createproject_form.name, placeholder="Name") }}
+        {{ render_field(createproject_form.feedback_type, placeholder="Feedback Type") }}
+        {{ render_field(createproject_form.visualization_type, placeholder="Visualization Type") }}
+        {{ render_field(createproject_form.allow_regions, placeholder="Allow Regions") }}
+        {{ render_field(createproject_form.annotation_tags, placeholder="Annotation Tag File List") }}
+        {{ render_field(createproject_form.audio_url_root, placeholder="Audio URL root") }}
+        {{ render_field(createproject_form.audios, placeholder="Audio File List") }}
+        <input type="submit" value="Go">
+    </form>
+</div>
+
+<div id="get_annotations">
+    Get annotations
+    <form method="POST" action="/get_annotations">
+        {{ getannotations_form.csrf_token }}
+        {{ render_field(getannotations_form.project, placeholder="Project") }}
+        <input type="submit" value="Go">
+    </form>
+</div>
+{% endblock %}

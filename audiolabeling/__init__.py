@@ -39,7 +39,9 @@ app.register_blueprint(users_blueprint, url_prefix='/users')
 # flask-admin #
 ###############
 
-admin = Admin(app, name='Audiolabeling', template_mode='bootstrap3')
+import audiolabeling.admin.views as admin_views
+
+admin = Admin(app, name='Audiolabeling', template_mode='bootstrap3', index_view=admin_views.MyHomeView())
 admin.add_view(models.AdminModelView(models.User, db.session))
 admin.add_view(models.AdminModelView(models.TagType, db.session))
 admin.add_view(models.AdminModelView(models.AnnotationTag, db.session))
