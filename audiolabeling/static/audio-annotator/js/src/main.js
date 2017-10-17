@@ -219,6 +219,7 @@ Annotator.prototype = {
             // Get data about the annotations the user has created
             var content = {
                 project_id: this.currentTask.project_id,
+                audio_id: this.currentTask.audio_id,
                 task_start_time: this.taskStartTime,
                 task_end_time: new Date().getTime(),
                 visualization: this.wavesurfer.params.visualization,

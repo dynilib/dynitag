@@ -62,6 +62,7 @@ def get_task(project_id):
         data = {}
 
         data["project_id"] = project_id
+        data["audio_id"] = audio_id
         data["feedback"] = proj.feedbacktype.value
         data["visualization"] = proj.visualizationtype.value
         data["allowRegions"] = proj.allowRegions
