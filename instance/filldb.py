@@ -54,15 +54,16 @@ with app.app_context():
     anntag5.tagtype_id = tagtype2.id
     
     audio1 = Audio()
-    audio1.url = "audio/ID1278.wav"
+    audio1.rel_path = "ID1278.wav"
 
     audio2 = Audio()
-    audio2.url = "audio/ID1283.wav"
+    audio2.rel_path = "ID1283.wav"
 
     audio3 = Audio()
-    audio3.url = "audio/ID1284.wav"
+    audio3.rel_path = "ID1284.wav"
 
     project1 = Project()
+    project1.audio_root_url = "http://127.0.0.1:5000/static/audio/"
     project1.feedbacktype = FeedbackType.NONE
     project1.visualizationtype = VisualizationType.SPECTROGRAM
     project1.name = "project1"

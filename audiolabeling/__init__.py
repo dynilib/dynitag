@@ -8,7 +8,7 @@ from flask_bcrypt import Bcrypt
 
 
 app = Flask(__name__, instance_relative_config=True)
-app.config.from_pyfile('flask.cfg')
+app.config.from_pyfile('config.py')
 
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
@@ -42,7 +42,7 @@ app.register_blueprint(users_blueprint, url_prefix='/users')
 import audiolabeling.admin.views as admin_views
 
 admin = Admin(app, name='Audiolabeling', template_mode='bootstrap3', index_view=admin_views.MyHomeView())
-admin.add_view(models.AdminModelView(models.User, db.session))
-admin.add_view(models.AdminModelView(models.TagType, db.session))
-admin.add_view(models.AdminModelView(models.AnnotationTag, db.session))
-admin.add_view(models.AdminModelView(models.Project, db.session))
+admin.add_view(admin_views.AdminModelView(models.User, db.session))
+admin.add_view(admin_views.AdminModelView(models.TagType, db.session))
+admin.add_view(admin_views.AdminModelView(models.AnnotationTag, db.session))
+admin.add_view(admin_views.AdminModelView(models.Project, db.session))

@@ -1,3 +1,4 @@
+import os
 from flask import render_template, redirect, request, jsonify, url_for, flash
 from flask_login import login_required, current_user
 from sqlalchemy.sql.expression import func
@@ -57,6 +58,8 @@ def get_task(project_id):
 
     data = {}
 
+    print(audio)
+
     if audio:
 
         proj = Project.query.get(project_id)
@@ -66,13 +69,13 @@ def get_task(project_id):
 
         data["project_id"] = project_id
         data["audio_id"] = audio.id
-        data["feedback"] = proj.feedbacktype.value
-        data["visualization"] = proj.visualizationtype.value
+        data["feedback"] = proj.feedbacktype.name.lower()
+        data["visualization"] = proj.visualizationtype.name.lower()
         data["allowRegions"] = proj.allowRegions
         data["annotationTags"] = {}
         for tagtype in tagtypes:
             data["annotationTags"][tagtype.name] = [ann_tag.name for ann_tag in annotation_tags.filter(AnnotationTag.tagtype==tagtype).all()]
-        data["url"] = url_for("static", filename=audio.url)
+        data["url"] = os.path.join(proj.audio_root_url, audio.rel_path)
         data["tutorialVideoURL"] = "https://www.youtube.com/embed/Bg8-83heFRM"
         data["alwaysShowTags"] = True
         data["instructions"] = [
@@ -83,6 +86,8 @@ def get_task(project_id):
                         "4. &nbsp; When creating a new annotation be as precise as possible.",
                     ]
 
+    print(data)
+
     return jsonify({"task": data})
 
 
@@ -91,10 +96,10 @@ def get_task(project_id):
 def post_annotation():
 
     data = request.json
-    print(data)
 
     audio_id = data["audio_id"]
     project_id = data["project_id"]
+    project = Project.query.get(project_id)
 
     for region in data["annotations"]:
 
@@ -108,8 +113,9 @@ def post_annotation():
             ann.audio_id = audio_id
             ann.project_id = project_id
             ann.user_id = current_user.id
-            ann.start_time = start_time
-            ann.end_time = end_time
+            if project.allowRegions:
+                ann.start_time = start_time
+                ann.end_time = end_time
             db.session.add(ann)
             db.session.commit()
             # TODO commit manage error

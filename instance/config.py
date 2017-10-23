@@ -16,3 +16,7 @@ MAIL_PORT=465,
 MAIL_USE_SSL=True,
 MAIL_USERNAME = 'audiolabeling@gmail.com',
 MAIL_PASSWORD = 'audi4Basta'
+
+# Upload directory
+UPLOAD_DIR = '/home/jul/dev/audiolabeling/upload/'
+

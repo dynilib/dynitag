@@ -2,20 +2,9 @@ import enum
 from datetime import datetime
 from flask import redirect, request, url_for
 from sqlalchemy.ext.hybrid import hybrid_method, hybrid_property
-from flask_admin.contrib.sqla import ModelView
 from flask_login import current_user
 
 from audiolabeling import db, bcrypt, login_manager
-
-
-class AdminModelView(ModelView):
-
-    def is_accessible(self):
-        return current_user.is_authenticated and current_user.role=="admin"
-
-    def inaccessible_callback(self, name, **kwargs):
-        # redirect to login page if user doesn't have access
-        return redirect(url_for(login_manager.login_view, next=request.url))
 
 
 class User(db.Model):
@@ -134,10 +123,12 @@ annotationtag_project_rel = db.Table('annotationtag_project_rel',
 class Project(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, unique=True, nullable=False)
+    n_annotations_per_file = db.Column(db.Integer, default=1, nullable=False)
+    audio_root_url = db.Column(db.String, nullable=False)
     feedbacktype = db.Column(db.Enum(FeedbackType), nullable=False)
     visualizationtype = db.Column(db.Enum(VisualizationType), nullable=False)
     allowRegions = db.Column(db.Boolean, nullable=False)
-    name = db.Column(db.String, unique=True, nullable=False)
     annotationtags = db.relationship('AnnotationTag',
                                      secondary=annotationtag_project_rel,
                                      lazy='dynamic',
@@ -149,6 +140,8 @@ class Project(db.Model):
     annotations = db.relationship('Annotation',
                                   backref='project',
                                   lazy='dynamic')
+    audios_filename = db.Column(db.String, unique=True, nullable=True)
+    annotations_filename = db.Column(db.String, unique=True, nullable=True)
 
     def __repr__(self):
         return '<name {}>'.format(self.name)
@@ -170,7 +163,7 @@ class AnnotationTag(db.Model):
 class Audio(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
-    url = db.Column(db.String, unique=True, nullable=False)
+    rel_path = db.Column(db.String, unique=True, nullable=False)
     annotations = db.relationship('Annotation',
                                   backref='audio',
                                   lazy='dynamic')
