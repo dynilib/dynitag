@@ -58,10 +58,10 @@ def send_confirmation_email(user_email):
         _external=True)
 
     html = render_template(
-        'email_confirmation.html',
+        'user/email_confirmation.html',
         confirm_url=confirm_url)
 
-    print("sending emaillll")
+    print("sending email")
     send_email('Confirm Your Email Address', [user_email], html)
 
 
@@ -74,7 +74,7 @@ def send_password_reset_email(user_email):
         _external=True)
 
     html = render_template(
-        'email_password_reset.html',
+        'user/email_password_reset.html',
         password_reset_url=password_reset_url)
 
     send_email('Password Reset Requested', [user_email], html)
@@ -101,7 +101,7 @@ def register():
             except IntegrityError:
                 db.session.rollback()
                 flash('ERROR! Email ({}) already exists.'.format(form.email.data), 'error')
-    return render_template('register.html', form=form)
+    return render_template('user/register.html', form=form)
 
 
 @users_blueprint.route('/login', methods=['GET', 'POST'])
@@ -121,7 +121,7 @@ def login():
                 return redirect("/projects")
             else:
                 flash('ERROR! Incorrect login credentials.', 'error')
-    return render_template('login.html', form=form)
+    return render_template('user/login.html', form=form)
 
 
 @users_blueprint.route('/logout')
@@ -167,7 +167,7 @@ def reset():
             user = User.query.filter_by(email=form.email.data).first_or_404()
         except:
             flash('Invalid email address!', 'error')
-            return render_template('password_reset_email.html', form=form)
+            return render_template('user/password_reset_email.html', form=form)
 
         if user.email_confirmed:
             send_password_reset_email(user.email)
@@ -176,7 +176,7 @@ def reset():
             flash('Your email address must be confirmed before attempting a password reset.', 'error')
         return redirect(url_for('users.login'))
 
-    return render_template('password_reset_email.html', form=form)
+    return render_template('user/password_reset_email.html', form=form)
 
 
 @users_blueprint.route('/reset/<token>', methods=["GET", "POST"])
@@ -203,13 +203,13 @@ def reset_with_token(token):
         flash('Your password has been updated!', 'success')
         return redirect(url_for('users.login'))
 
-    return render_template('reset_password_with_token.html', form=form, token=token)
+    return render_template('user/reset_password_with_token.html', form=form, token=token)
 
 
 @users_blueprint.route('/user_profile')
 @login_required
 def user_profile():
-    return render_template('user_profile.html')
+    return render_template('user/user_profile.html')
 
 
 @users_blueprint.route('/email_change', methods=["GET", "POST"])
@@ -235,7 +235,7 @@ def user_email_change():
                     flash('Sorry, that email already exists!', 'error')
             except IntegrityError:
                 flash('Error! That email already exists!', 'error')
-    return render_template('email_change.html', form=form)
+    return render_template('user/email_change.html', form=form)
 
 
 @users_blueprint.route('/password_change', methods=["GET", "POST"])
@@ -251,7 +251,7 @@ def user_password_change():
             flash('Password has been updated!', 'success')
             return redirect(url_for('users.user_profile'))
 
-    return render_template('password_change.html', form=form)
+    return render_template('user/password_change.html', form=form)
 
 
 @users_blueprint.route('/resend_confirmation')
@@ -273,6 +273,6 @@ def admin_view_users():
         abort(403)
     else:
         users = User.query.order_by(User.id).all()
-        return render_template('admin_view_users.html', users=users)
+        return render_template('user/admin_view_users.html', users=users)
     return redirect(url_for('users.login'))
 

@@ -16,8 +16,8 @@
     <button class="btn btn-sm btn-success" type="submit">Log In</button>
   </form>
   <br>
-  <p><em>Need an account? </em><a href="/register">Signup!!</a></p>
-  <p><em>Forgot your password? </em><a href="/reset">Reset!!</a></p>
+  <p><em>Need an account? </em><a href="{{ url_for('users.register') }}">Signup!!</a></p>
+  <p><em>Forgot your password? </em><a href="{{ url_for('users.reset') }}">Reset!!</a></p>
 </div>
 
 {% endblock %}
