@@ -14,9 +14,9 @@ with app.app_context():
 
     # Insert user data
 
-    admin = User(email='jujul@gmail.com', plaintext_password='password1234', role='admin')
+    admin = User(username='admin', email='jujul@gmail.com', plaintext_password='password1234', role='admin')
     db.session.add(admin)
-    user1 = User(email='jujulj@gmail.com', plaintext_password='password1234', role='user')
+    user1 = User(username='jul', email='jujulj@gmail.com', plaintext_password='password1234', role='user')
     db.session.add(user1)
 
     # Insert other data

@@ -11,6 +11,7 @@ class User(db.Model):
     """Copied from https://gitlab.com/patkennedy79/flask_recipe_app/blob/master/web/project/models.py"""
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    username = db.Column(db.String, unique=True, nullable=False)
     email = db.Column(db.String, unique=True, nullable=False)
     _password = db.Column(db.Binary(60), nullable=False)
     authenticated = db.Column(db.Boolean, default=False)
@@ -23,7 +24,8 @@ class User(db.Model):
     role = db.Column(db.String, default='user')
     annotations = db.relationship('Annotation', backref='user', lazy='dynamic')
 
-    def __init__(self, email, plaintext_password, email_confirmation_sent_on=None, role='user'):
+    def __init__(self, username, email, plaintext_password, email_confirmation_sent_on=None, role='user'):
+        self.username = username
         self.email = email
         self.password = plaintext_password
         self.authenticated = False
@@ -81,7 +83,7 @@ class User(db.Model):
         return User.query.get(data['id'])
 
     def __repr__(self):
-        return '<User {}>'.format(self.email)
+        return '<User {}>'.format(self.username)
 
 
 @enum.unique

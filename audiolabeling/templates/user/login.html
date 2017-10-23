@@ -10,7 +10,7 @@
   <form action="{{ url_for('users.login') }}" method="post">
     {{ form.csrf_token }}
     <dl>
-      {{ render_field(form.email, placeholder="Email address") }}
+      {{ render_field(form.username, placeholder="Username") }}
       {{ render_field(form.password, placeholder="Password") }}
     </dl>
     <button class="btn btn-sm btn-success" type="submit">Log In</button>

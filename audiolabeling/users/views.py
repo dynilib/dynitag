@@ -90,7 +90,7 @@ def register():
     if request.method == 'POST':
         if form.validate_on_submit():
             try:
-                new_user = User(form.email.data, form.password.data)
+                new_user = User(form.username.data, form.email.data, form.password.data)
                 new_user.authenticated = True
                 db.session.add(new_user)
                 db.session.commit()
@@ -109,7 +109,7 @@ def login():
     form = LoginForm(request.form)
     if request.method == 'POST':
         if form.validate_on_submit():
-            user = User.query.filter_by(email=form.email.data).first()
+            user = User.query.filter_by(username=form.username.data).first()
             if user is not None and user.is_correct_password(form.password.data):
                 user.authenticated = True
                 user.last_logged_in = user.current_logged_in
@@ -117,7 +117,7 @@ def login():
                 db.session.add(user)
                 db.session.commit()
                 login_user(user)
-                flash('Thanks for logging in, {}'.format(current_user.email))
+                flash('Thanks for logging in, {}'.format(current_user.username))
                 return redirect("/projects")
             else:
                 flash('ERROR! Incorrect login credentials.', 'error')
