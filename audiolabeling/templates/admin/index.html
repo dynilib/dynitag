@@ -5,15 +5,16 @@ i{% from "_form_macros.html" import render_field %}
 
 <div id="create_project">
     Create project
-    <form method="POST" action="create_project">
+    <form method="POST" action="/create_project" enctype="multipart/form-data">
         {{ createproject_form.csrf_token }}
         {{ render_field(createproject_form.name, placeholder="Name") }}
-        {{ render_field(createproject_form.feedback_type, placeholder="Feedback Type") }}
-        {{ render_field(createproject_form.visualization_type, placeholder="Visualization Type") }}
-        {{ render_field(createproject_form.allow_regions, placeholder="Allow Regions") }}
-        {{ render_field(createproject_form.annotation_tags, placeholder="Annotation Tag File List") }}
-        {{ render_field(createproject_form.audio_url_root, placeholder="Audio URL root") }}
-        {{ render_field(createproject_form.audios, placeholder="Audio File List") }}
+        {{ render_field(createproject_form.feedback_type) }}
+        {{ render_field(createproject_form.visualization_type) }}
+        {{ render_field(createproject_form.n_annotations_per_file, placeholder="# annotators per file") }}
+        {{ render_field(createproject_form.allow_regions) }}
+        {{ render_field(createproject_form.annotation_tags) }}
+        {{ render_field(createproject_form.audio_root_url, placeholder="Audio root URL") }}
+        {{ render_field(createproject_form.audios) }}
         <input type="submit" value="Go">
     </form>
 </div>

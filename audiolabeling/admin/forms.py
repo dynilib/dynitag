@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired
-from wtforms import SelectField, StringField, BooleanField
+from wtforms import SelectField, StringField, BooleanField, IntegerField
 from wtforms.validators import DataRequired
 
 
@@ -13,8 +13,9 @@ class CreateProjectForm(FlaskForm):
     feedback_type = SelectField(u'Feedback Type', coerce=int)
     visualization_type = SelectField(u'Visualization Type', coerce=int)
     allow_regions = BooleanField(u'Allow Regions')
+    n_annotations_per_file = IntegerField('Number of annotators per file', default=1, validators=[DataRequired()])
     annotation_tags = FileField(validators=[FileRequired()])
-    audio_url_root = StringField('name', validators=[DataRequired()])
+    audio_root_url = StringField('Audio root URL', validators=[DataRequired()])
     audios = FileField(validators=[FileRequired()])
 
     def __init__(self, *args, **kwargs):
