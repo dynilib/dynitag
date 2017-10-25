@@ -1,7 +1,10 @@
 {% extends "layout.html" %}
 
 {% block content %}
+<div id="home">
+    <div id="title">Audio annotator</div>
+    <div><a href="/projects">Projects</a></div>
+</div>
 
-<a href="{{ url_for('users.login') }}">Login</a> / <a href="{{ url_for('users.register') }}">Signup</a>
-
+</section>
 {% endblock %}

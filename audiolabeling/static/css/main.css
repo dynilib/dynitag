@@ -1,0 +1,15 @@
+div#home {
+    padding: 1em;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+}
+
+div#home #title {
+    margin-top: 2em;
+    font-size: 2em;
+    font-weight: 700;
+    text-align: center;
+}
