@@ -204,6 +204,7 @@ Annotator.prototype = {
             .done(function(data) {
                 if (data.message){
                     $("div.annotation").replaceWith(data.message);
+                    $("div.header").empty();
                 }
                 else{
                     my.currentTask = data.task;
