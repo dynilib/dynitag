@@ -75,13 +75,22 @@ def get_task(project_id):
         data["url"] = os.path.join(proj.audio_root_url, audio.rel_path)
         data["tutorialVideoURL"] = "https://www.youtube.com/embed/Bg8-83heFRM"
         data["alwaysShowTags"] = True
-        data["instructions"] = [
-                        "Highlight &amp; Label Each Sound",
-                        "1. &nbsp; Familiarize yourself with the list of sound labels under the audio recording.", 
-                        "2. &nbsp; Click the play button and listen to the recording.", 
-                        "3. &nbsp; For each sound event that you hear click and drag on the visualization to create a new annotation.",
-                        "4. &nbsp; When creating a new annotation be as precise as possible.",
-                    ]
+
+        if proj.allowRegions:
+            data["instructions"] = [
+                            "Highlight &amp; Label Each Sound",
+                            "1. &nbsp; Familiarize yourself with the list of sound labels under the audio recording.", 
+                            "2. &nbsp; Click the play button and listen to the recording.", 
+                            "3. &nbsp; For each sound event that you hear click and drag on the visualization to create a new annotation.",
+                            "4. &nbsp; When creating a new annotation be as precise as possible.",
+                        ]
+        else:
+            data["instructions"] = [
+                            "Highlight &amp; Label Each Sound",
+                            "1. &nbsp; Familiarize yourself with the list of sound labels under the audio recording.", 
+                            "2. &nbsp; Click the play button and listen to the recording.", 
+                            "3. &nbsp; Make sure the correct annotations are selected before submitting.",
+                        ]
         return jsonify({"task": data})
 
     return jsonify({"message": "Your annotation task for project {} is over ! Select another project <a href=\"{}\">here</a>.".format(proj.name, url_for('projects'))})
@@ -116,6 +125,5 @@ def post_annotation():
             db.session.commit()
             # TODO commit manage error
 
-    flash('New annotation, added!', 'success')
     return jsonify({'success':True}), 200, {'ContentType':'application/json'}
 
