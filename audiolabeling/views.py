@@ -56,14 +56,12 @@ def get_task(project_id):
         .filter(q.c.count<proj.n_annotations_per_file)\
         .first()
 
-    data = {}
-
-
     if audio:
+
+        data = {}
 
         annotation_tags = proj.annotationtags
         tagtypes = annotation_tags.with_entities(TagType).all()
-
 
         data["project_id"] = project_id
         data["audio_id"] = audio.id
@@ -83,10 +81,9 @@ def get_task(project_id):
                         "3. &nbsp; For each sound event that you hear click and drag on the visualization to create a new annotation.",
                         "4. &nbsp; When creating a new annotation be as precise as possible.",
                     ]
+        return jsonify({"task": data})
 
-    print(data)
-
-    return jsonify({"task": data})
+    return jsonify({"message": "Your annotation task for project {} is over ! Select another project <a href=\"{}\">here</a>.".format(proj.name, url_for('projects'))})
 
 
 @app.route('/post_annotation', methods=['POST'])

@@ -202,8 +202,13 @@ Annotator.prototype = {
         var my = this;
         $.getJSON(dataUrl)
             .done(function(data) {
-                my.currentTask = data.task;
-                my.update();
+                if (data.message){
+                    $("div.annotation").replaceWith(data.message);
+                }
+                else{
+                    my.currentTask = data.task;
+                    my.update();
+                }
             });
     },
 
