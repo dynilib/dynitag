@@ -16,13 +16,7 @@
     </head>
 
     <body>
-        {% if current_user.is_authenticated %}
-        Hi {{ current_user.name }}! / <a href="{{ url_for('users.login') }}">Logout</a>
-        {% endif %}
-
-        <!-- child template -->
-        {% block content %}
-        {% endblock %}
-
+        {% include 'header.html' %}
+        {% block content %}{% endblock %}
     </body>
 </html>

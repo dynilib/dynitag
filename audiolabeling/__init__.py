@@ -41,7 +41,7 @@ app.register_blueprint(users_blueprint, url_prefix='/users')
 
 import audiolabeling.admin.views as admin_views
 
-admin = Admin(app, name='Audiolabeling', template_mode='bootstrap3', index_view=admin_views.MyHomeView())
+admin = Admin(app, name='Audiolabeling', template_mode='bootstrap3', index_view=admin_views.MyHomeView(), base_template='admin/base_with_header.html')
 admin.add_view(admin_views.AdminModelView(models.User, db.session))
 admin.add_view(admin_views.AdminModelView(models.TagType, db.session))
 admin.add_view(admin_views.AdminModelView(models.AnnotationTag, db.session))

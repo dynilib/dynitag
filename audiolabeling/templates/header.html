@@ -1,0 +1,23 @@
+{% import '_macros.html' as macros with context %}
+
+<div id="header" style="padding:0.5em;">
+    <div>
+    {% if request.path != "/" %}
+    <span><a href="/">Home</a></span>
+    {% endif %}
+    <span style="float:right;">
+        {% if current_user.is_authenticated %}
+        {{ current_user.username }} / <a href="{{ url_for('users.logout') }}">Logout</a>
+        {% if current_user.role =="admin" and "admin" not in request.path %}
+        / <a href="/admin">Admin</a>
+        {% endif %}
+        {% else %}
+        <a href="{{ url_for('users.login') }}">Login</a> / <a href="{{ url_for('users.register') }}">Signup</a>
+        {% endif %}
+    </span>
+    </div>
+    <div>
+        {{ macros.messages() }}
+    </div>
+</div>
+
