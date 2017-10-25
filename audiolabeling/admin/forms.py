@@ -30,4 +30,4 @@ class GetAnnotationsForm(FlaskForm):
 
     def __init__(self, *args, **kwargs):
         super(GetAnnotationsForm, self).__init__(*args, **kwargs)
-        self.project.choices = [(p.id, p.name) for p in Project.query.all()]
+        self.project.choices = [(p.id, "{}{}".format(p.name, " (over)") if p.is_over else "") for p in Project.query.all()]

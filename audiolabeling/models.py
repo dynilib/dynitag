@@ -126,11 +126,11 @@ class Project(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, unique=True, nullable=False)
-    n_annotations_per_file = db.Column(db.Integer, default=1, nullable=False)
     audio_root_url = db.Column(db.String, nullable=False)
     feedbacktype = db.Column(db.Enum(FeedbackType), nullable=False)
     visualizationtype = db.Column(db.Enum(VisualizationType), nullable=False)
     allowRegions = db.Column(db.Boolean, nullable=False)
+    n_annotations_per_file = db.Column(db.Integer, nullable=True)
     annotationtags = db.relationship('AnnotationTag',
                                      secondary=annotationtag_project_rel,
                                      lazy='dynamic',
@@ -144,6 +144,14 @@ class Project(db.Model):
                                   lazy='dynamic')
     audios_filename = db.Column(db.String, unique=True, nullable=True)
     annotations_filename = db.Column(db.String, unique=True, nullable=True)
+
+    @property
+    def is_over(self):
+        if (self.n_annotations_per_file and
+                self.annotations.count() >= self.audios.count() * self.n_annotations_per_file):
+            return True
+        return False
+
 
     def __repr__(self):
         return '<name {}>'.format(self.name)

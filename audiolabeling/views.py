@@ -48,13 +48,14 @@ def get_task(project_id):
 
     # get random audio from project with no annotations from current user
     # (might be optimized using project.audios) and less than project.n_annotations_per_file
-    q = db.session.query(Annotation.audio_id, db.func.count(Annotation.user_id.distinct()).label('count')).group_by(Annotation.audio_id).subquery()
-    audio = Audio.query.join(q, q.c.audio_id == Audio.id)\
+    subquery = db.session.query(Annotation.audio_id, db.func.count(Annotation.user_id.distinct()).label('count')).group_by(Annotation.audio_id).subquery()
+    query = Audio.query.join(subquery, subquery.c.audio_id == Audio.id)\
         .order_by(func.random())\
         .filter(Audio.projects.any(Project.id==project_id))\
-        .filter(~Audio.annotations.any(Annotation.user_id==current_user.id))\
-        .filter(q.c.count<proj.n_annotations_per_file)\
-        .first()
+        .filter(~Audio.annotations.any(Annotation.user_id==current_user.id))
+    if proj.n_annotations_per_file:
+        query = query.filter(subquery.c.count<proj.n_annotations_per_file)
+    audio = query.first()
 
     if audio:
 
