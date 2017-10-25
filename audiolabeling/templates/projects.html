@@ -2,7 +2,7 @@
 
 {% block content %}
 
-{% from "_form_macros.html" import render_field %}
+{% from "_macros.html" import render_field %}
 <form method="post">
     <dl>
         {{ render_field(form.project) }}
