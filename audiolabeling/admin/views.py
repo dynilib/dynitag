@@ -26,6 +26,7 @@ class MyHomeView(flask_admin.AdminIndexView):
         return current_user.is_authenticated and current_user.role=="admin"
 
     def inaccessible_callback(self, name, **kwargs):
+        flash('Only admins can access Admin.', 'error')
         # redirect to login page if user doesn't have access
         return redirect(url_for(login_manager.login_view, next=request.url))
 

@@ -100,7 +100,7 @@ def register():
                 return redirect("/")
             except IntegrityError:
                 db.session.rollback()
-                flash('ERROR! Email ({}) already exists.'.format(form.email.data), 'error')
+                flash('Email ({}) already exists.'.format(form.email.data), 'error')
     return render_template('user/register.html', form=form)
 
 
@@ -117,10 +117,9 @@ def login():
                 db.session.add(user)
                 db.session.commit()
                 login_user(user)
-                flash('Thanks for logging in, {}'.format(current_user.username))
                 return redirect("/projects")
             else:
-                flash('ERROR! Incorrect login credentials.', 'error')
+                flash('Incorrect login credentials.', 'error')
     return render_template('user/login.html', form=form)
 
 
@@ -132,8 +131,7 @@ def logout():
     db.session.add(user)
     db.session.commit()
     logout_user()
-    flash('Goodbye!', 'info')
-    return redirect(url_for('users.login'))
+    return redirect(url_for('index'))
 
 
 @users_blueprint.route('/confirm/<token>')
