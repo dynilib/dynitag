@@ -44,9 +44,6 @@ def project(project_id):
 @login_required
 def get_task(project_id):
 
-    print(project_id)
-    print(current_user.id)
-
     proj = Project.query.get(project_id)
 
     # Get audios from current project that have not been annotated by the current user
