@@ -1,10 +1,15 @@
 {% extends 'admin/master.html' %}
 {% from "_macros.html" import render_field %}
 
+{% block head_css %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+{% endblock %}
+
 {% block body %}
 
-<div id="create_project">
-    Create project
+<div class="title">Create project</div>
+<div id="create_project" class="initiallyHidden">
     <form method="POST" action="/create_project" enctype="multipart/form-data">
         {{ createproject_form.csrf_token }}
         {{ render_field(createproject_form.name, placeholder="Name") }}
@@ -19,12 +24,26 @@
     </form>
 </div>
 
-<div id="get_annotations">
-    Get annotations
+<div class="title">Get annotations</div>
+<div id="get_annotations" class="initiallyHidden">
     <form method="POST" action="/get_annotations">
         {{ getannotations_form.csrf_token }}
         {{ render_field(getannotations_form.project, placeholder="Project") }}
         <input type="submit" value="Go">
     </form>
 </div>
+{% endblock %}
+
+{% block tail_js %}
+
+{{ super() }}
+
+<script type="text/javascript">
+
+$("div.title").click(function(){
+        $(this).next('div').toggle();
+});
+
+</script>
+
 {% endblock %}

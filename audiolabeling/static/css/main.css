@@ -26,3 +26,16 @@ div#home #title {
     margin: 0.5em 0;
     padding: 0;
 }
+
+.title{
+    font-size: 1.5em;
+    cursor: pointer;
+    color: #337ab7; /*same as bootstrap.css*/
+}
+
+.title:hover, .title:focus{
+    cursor: pointer;
+    color: #23527c; /*same as bootstrap.css*/
+}
+
+.initiallyHidden { display: none; }
