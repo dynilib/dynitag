@@ -1,3 +1,7 @@
+div#content {
+    padding: 1em;
+}
+
 div#home {
     padding: 1em;
     position: absolute;
@@ -12,4 +16,13 @@ div#home #title {
     font-size: 2em;
     font-weight: 700;
     text-align: center;
+}
+
+.divider {
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #ccc;
+    margin: 0.5em 0;
+    padding: 0;
 }
