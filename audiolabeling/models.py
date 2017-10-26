@@ -127,8 +127,8 @@ class Project(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, unique=True, nullable=False)
     audio_root_url = db.Column(db.String, nullable=False)
-    feedbacktype = db.Column(db.Enum(FeedbackType), nullable=False)
-    visualizationtype = db.Column(db.Enum(VisualizationType), nullable=False)
+    feedbacktype = db.Column(db.Enum(FeedbackType), default=FeedbackType.NONE, nullable=False)
+    visualizationtype = db.Column(db.Enum(VisualizationType), default=VisualizationType.SPECTROGRAM, nullable=False)
     allowRegions = db.Column(db.Boolean, nullable=False)
     n_annotations_per_file = db.Column(db.Integer, nullable=True)
     annotationtags = db.relationship('AnnotationTag',
@@ -146,7 +146,7 @@ class Project(db.Model):
     annotations_filename = db.Column(db.String, unique=True, nullable=True)
 
     @property
-    def is_over(self):
+    def is_completed(self):
         if (self.n_annotations_per_file and
                 self.annotations.count() >= self.audios.count() * self.n_annotations_per_file):
             return True

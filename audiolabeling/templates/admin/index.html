@@ -13,7 +13,7 @@
     <form method="POST" action="/create_project" enctype="multipart/form-data">
         {{ createproject_form.csrf_token }}
         {{ render_field(createproject_form.name, placeholder="Name") }}
-        {{ render_field(createproject_form.feedback_type) }}
+        {# {{ render_field(createproject_form.feedback_type) }} #}
         {{ render_field(createproject_form.visualization_type) }}
         {{ render_field(createproject_form.n_annotations_per_file, placeholder="# annotators per file") }}
         {{ render_field(createproject_form.allow_regions) }}
@@ -23,7 +23,7 @@
         <input type="submit" value="Go">
     </form>
 </div>
-
+<div class="divider"></div>
 <div class="title">Get annotations</div>
 <div id="get_annotations" class="initiallyHidden">
     <form method="POST" action="/get_annotations">

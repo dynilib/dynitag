@@ -9,9 +9,9 @@ from audiolabeling.models import FeedbackType, VisualizationType, Project
 
 class CreateProjectForm(FlaskForm):
 
-    name = StringField('name', validators=[DataRequired()])
-    feedback_type = SelectField(u'Feedback Type', coerce=int)
-    visualization_type = SelectField(u'Visualization Type', coerce=int)
+    name = StringField('Name', validators=[DataRequired()])
+    #feedback_type = SelectField(u'Feedback Type', coerce=int)
+    visualization_type = SelectField(u'Visualization Type', coerce=int, default=VisualizationType.SPECTROGRAM.value)
     allow_regions = BooleanField(u'Allow Regions')
     n_annotations_per_file = IntegerField('Number of annotators per file', default=1, validators=[DataRequired()])
     annotation_tags = FileField(validators=[FileRequired()])
@@ -20,7 +20,7 @@ class CreateProjectForm(FlaskForm):
 
     def __init__(self, *args, **kwargs):
         super(CreateProjectForm, self).__init__(*args, **kwargs)
-        self.feedback_type.choices = [(f.value, f.name) for f in FeedbackType]
+        #self.feedback_type.choices = [(f.value, f.name) for f in FeedbackType]
         self.visualization_type.choices = [(v.value, v.name) for v in VisualizationType]
 
 
@@ -30,4 +30,4 @@ class GetAnnotationsForm(FlaskForm):
 
     def __init__(self, *args, **kwargs):
         super(GetAnnotationsForm, self).__init__(*args, **kwargs)
-        self.project.choices = [(p.id, "{}{}".format(p.name, " (over)") if p.is_over else "") for p in Project.query.all()]
+        self.project.choices = [(p.id, "{}{}".format(p.name, " (completed)" if p.is_completed else "")) for p in Project.query.all()]
