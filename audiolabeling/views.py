@@ -124,6 +124,11 @@ def post_annotation():
             db.session.add(ann)
             db.session.commit()
             # TODO commit manage error
-
-    return jsonify({'success':True}), 200, {'ContentType':'application/json'}
+    
+    return (
+        jsonify({
+            'success':True,
+            'flash_message':{'msg': 'New annotation, added!', 'cat': 'success'}}),
+        200,
+        {'ContentType':'application/json'})
 

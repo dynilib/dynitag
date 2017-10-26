@@ -256,6 +256,7 @@ Annotator.prototype = {
     // Make POST request, passing back the content data. On success load in the next task
     post: function (content) {
         var my = this;
+        //${"div#messages").empty();
         $.ajax({
             type: 'POST',
             url: postUrl,
@@ -266,6 +267,9 @@ Annotator.prototype = {
             // If the last task had a hiddenImage component, remove it
             if (my.currentTask.feedback === 'hiddenImage') {
                 my.hiddenImage.remove();
+            }
+            if(data.flash_message){
+                show_message(data.flash_message);
             }
             my.loadNextTask();
         })
@@ -280,10 +284,15 @@ Annotator.prototype = {
 
 };
 
+function show_message(message) {
+    $("div#messages").replaceWith(message.msg);
+};
+
+
 function main() {
     // Create all the components
     var annotator = new Annotator();
     // Load the first audio annotation task
     annotator.loadNextTask();
-}
+};
 main();
