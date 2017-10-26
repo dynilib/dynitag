@@ -1,9 +1,10 @@
+import re
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired
 from wtforms import SelectField, StringField, BooleanField, IntegerField
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, ValidationError
 
-
+from audiolabeling import db
 from audiolabeling.models import FeedbackType, VisualizationType, Project
 
 
@@ -23,6 +24,27 @@ class CreateProjectForm(FlaskForm):
         #self.feedback_type.choices = [(f.value, f.name) for f in FeedbackType]
         self.visualization_type.choices = [(v.value, v.name) for v in VisualizationType]
 
+    def validate_name(form, field):
+        if db.session.query(Project.id).filter_by(name=field.data).scalar() is not None:
+            raise ValidationError('Name already used.')
+
+    def validate_annotation_tags(form, field):
+        is_empty = True
+        for line in form.annotation_tags.data:
+            is_empty = False
+            if not re.match(r'^[a-zA-Z0-9_\s]+,[a-zA-Z0-9_\s]+$', line.decode().strip()):
+                raise ValidationError('Wrong annotation file format.')
+        if is_empty:
+            raise ValidationError('Annotation file is empty.')
+        
+    def validate_audios(form, field):
+        is_empty = True
+        for line in form.audios.data:
+            is_empty = False
+            if not re.match(r'.+(wav|mp3)$', line.decode().strip()):
+                raise ValidationError('Wrong audio list file format.')
+        if is_empty:
+            raise ValidationError('Audio list file is empty.')
 
 class GetAnnotationsForm(FlaskForm):
 
