@@ -26,10 +26,10 @@
 <div class="divider"></div>
 <div class="title">Get annotations</div>
 <div id="get_annotations" class="al-form">
-    <form method="POST" action="/get_annotations">
+    <form action="/get_annotations">
         {{ getannotations_form.csrf_token }}
         {{ render_field(getannotations_form.project, placeholder="Project") }}
-        <button id="submit_get_annotations" type="submit">Submit</button>   
+        <button type="submit">Submit</button>   
     </form>
 </div>
 {% endblock %}
@@ -45,7 +45,6 @@ $("div.title").click(function(){
 });
 
 $(function() {
-    //$('button#submit_create_project').bind('click', function() {
     $('#create_project_form').submit( function() {
         var form_data = new FormData(this);
         $.ajax({
@@ -73,7 +72,6 @@ $(function() {
         return false;
     });
 });
-
 
 </script>
 

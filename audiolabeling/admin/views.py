@@ -1,7 +1,8 @@
 import os
 import uuid
+import re
 
-from flask import redirect, request, jsonify, flash, url_for, Markup
+from flask import redirect, request, jsonify, flash, url_for, Markup, Response
 import flask_admin
 from sqlalchemy import exc
 from flask_admin.contrib.sqla import ModelView
@@ -115,16 +116,14 @@ def create_project():
         return jsonify({'errors': form.errors})
 
 
-@app.route('/get_annotations', methods=['POST'])
+@app.route('/get_annotations', methods=['GET'])
 @login_required
 def get_annotations():
 
-    form = GetAnnotationsForm(request.form)
+    form = GetAnnotationsForm(request.args)
 
     project_id = form.project.data
-
     project = Project.query.get(project_id)
-
 
     audios = []
     for audio in project.audios:
@@ -144,14 +143,12 @@ def get_annotations():
             "annotations": annotations
         })
 
-
     data = {
         "project": project.name,
         "audio_root_url": project.audio_root_url,
         "audios": audios
     }
 
-    return jsonify(data)
-
-
-
+    response = jsonify(data)
+    response.headers['Content-Disposition'] = 'attachment;filename={}_annotations.json'.format(re.sub(r'[^a-zA-Z0-9_]','_', project.name))
+    return response
