@@ -47,7 +47,7 @@ class AdminModelView(ModelView):
 @login_required
 def create_project():
 
-    form = CreateProjectForm() # FlaskForm implicitely pass the request data to the form 
+    form = CreateProjectForm() # FlaskForm implicitely pass the request data to the form
 
     if form.validate_on_submit():
 
@@ -59,7 +59,6 @@ def create_project():
             project.allowRegions = form.allow_regions.data
             project.visualizationtype = VisualizationType(form.visualization_type.data)
 
-            # TODO validate parsing
             audios_file = form.audios.data
             audios_filename = str(uuid.uuid4()) + ".csv"
             project.audios_filename = audios_filename
@@ -70,6 +69,7 @@ def create_project():
                     audio = Audio()
                     audio.rel_path = line.decode().strip()
                 project.audios.append(audio)
+            audios_file.stream.seek(0) # needed to save it all
             audios_file.save(os.path.join(
                 app.config['UPLOAD_DIR'], 'audios', audios_filename
             ))
@@ -92,6 +92,7 @@ def create_project():
                     anntag.name = anntag_name
                     anntag.tagtype_id = tagtype.id
                 project.annotationtags.append(anntag)
+            annotations_file.stream.seek(0) # needed to save it all
             annotations_file.save(os.path.join(
                 app.config['UPLOAD_DIR'], 'annotations', annotations_filename
             ))

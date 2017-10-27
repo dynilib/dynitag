@@ -34,6 +34,7 @@ class CreateProjectForm(FlaskForm):
             is_empty = False
             if not re.match(r'^[a-zA-Z0-9_\s]+,[a-zA-Z0-9_\s]+$', line.decode().strip()):
                 raise ValidationError('Wrong annotation file format.')
+        form.annotation_tags.data.stream.seek(0) # needed to parse it later
         if is_empty:
             raise ValidationError('Annotation file is empty.')
         
@@ -43,6 +44,7 @@ class CreateProjectForm(FlaskForm):
             is_empty = False
             if not re.match(r'.+(wav|mp3)$', line.decode().strip()):
                 raise ValidationError('Wrong audio list file format.')
+        form.audios.data.stream.seek(0) # needed to parse it later
         if is_empty:
             raise ValidationError('Audio list file is empty.')
 
