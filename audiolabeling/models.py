@@ -1,10 +1,12 @@
+import os
 import enum
 from datetime import datetime
 from flask import redirect, request, url_for
 from sqlalchemy.ext.hybrid import hybrid_method, hybrid_property
+from sqlalchemy.event import listens_for
 from flask_login import current_user
 
-from audiolabeling import db, bcrypt, login_manager
+from audiolabeling import app, db, bcrypt, login_manager
 
 
 class User(db.Model):
@@ -141,9 +143,10 @@ class Project(db.Model):
                              backref=db.backref('projects', lazy=True))
     annotations = db.relationship('Annotation',
                                   backref='project',
-                                  lazy='dynamic')
-    audios_filename = db.Column(db.String, unique=True, nullable=True)
-    annotations_filename = db.Column(db.String, unique=True, nullable=True)
+                                  lazy='dynamic',
+                                  cascade='all')
+    audios_filename = db.Column(db.String, nullable=True)
+    annotations_filename = db.Column(db.String, nullable=True)
 
     @property
     def is_completed(self):
@@ -152,9 +155,25 @@ class Project(db.Model):
             return True
         return False
 
-
     def __repr__(self):
         return '<name {}>'.format(self.name)
+
+
+
+@listens_for(Project, 'after_delete')
+def del_file(mapper, connection, target):
+    if target.audios_filename:
+        try:
+            os.remove(os.path.join(app.config['UPLOAD_DIR'], 'audios', target.audios_filename))
+        except OSError:
+            # Don't care if was not deleted because it does not exist
+            pass
+    if target.annotations_filename:
+        try:
+            os.remove(os.path.join(app.config['UPLOAD_DIR'], 'annotations', target.annotations_filename))
+        except OSError:
+            # Don't care if was not deleted because it does not exist
+            pass
 
 
 class AnnotationTag(db.Model):
@@ -164,7 +183,8 @@ class AnnotationTag(db.Model):
     name = db.Column(db.String, unique=True, nullable=False)
     annotations = db.relationship('Annotation',
                                   backref='annotationtag',
-                                  lazy='dynamic')
+                                  lazy='dynamic',
+                                  cascade='all')
 
     def __repr__(self):
         return '<name {}>'.format(self.name)
@@ -176,7 +196,8 @@ class Audio(db.Model):
     rel_path = db.Column(db.String, unique=True, nullable=False)
     annotations = db.relationship('Annotation',
                                   backref='audio',
-                                  lazy='dynamic')
+                                  lazy='dynamic',
+                                  cascade='all')
 
     def __repr__(self):
         return '<id {}>'.format(self.id)

@@ -8,22 +8,6 @@
 
 {% block body %}
 
-<div class="title">Create project</div>
-<div id="create_project" class="al-form">
-    <form id="create_project_form" enctype="multipart/form-data">
-        {{ createproject_form.csrf_token }}
-        {{ render_field(createproject_form.name, placeholder="Name") }}
-        {# {{ render_field(createproject_form.feedback_type) }} #}
-        {{ render_field(createproject_form.visualization_type) }}
-        {{ render_field(createproject_form.n_annotations_per_file, placeholder="# annotators per file") }}
-        {{ render_field(createproject_form.allow_regions) }}
-        {{ render_field(createproject_form.annotation_tags) }}
-        {{ render_field(createproject_form.audio_root_url, placeholder="Audio root URL") }}
-        {{ render_field(createproject_form.audios) }}
-        <button type="submit">Submit</button>
-    </form>
-</div>
-<div class="divider"></div>
 <div class="title">Get annotations</div>
 <div id="get_annotations" class="al-form">
     <form action="/get_annotations">

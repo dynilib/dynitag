@@ -3,11 +3,14 @@ import uuid
 import re
 
 from flask import redirect, request, jsonify, flash, url_for, Markup, Response
+from wtforms import Form
+from wtforms.validators import ValidationError
 import flask_admin
 from sqlalchemy import exc
 from flask_admin.contrib.sqla import ModelView
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
+from werkzeug.datastructures import FileStorage
 
 from audiolabeling import app, db, login_manager
 from audiolabeling.admin.forms import CreateProjectForm, GetAnnotationsForm
@@ -18,10 +21,8 @@ from audiolabeling.admin.fields import CustomAdminConverter
 class MyHomeView(flask_admin.AdminIndexView):
     @flask_admin.expose('/')
     def index(self):
-        createproject_form = CreateProjectForm()
         getannotations_form = GetAnnotationsForm()
         return self.render('admin/index.html',
-                           createproject_form=createproject_form,
                            getannotations_form=getannotations_form)
 
     def is_accessible(self):
@@ -35,6 +36,11 @@ class MyHomeView(flask_admin.AdminIndexView):
 
 class AdminModelView(ModelView):
     model_form_converter = CustomAdminConverter
+    column_labels = dict(name='Name', visualizationtype='Visualization Type',
+                         feedbacktype='Feedback Type', allowRegions='Allow Regions',
+                         n_annotations_per_file='Number of annotations per file',
+                         audios_filename='Audio list filename',
+                         annotations_filename='Annotations filename')
     
     def is_accessible(self):
         return current_user.is_authenticated and current_user.role=="admin"
@@ -44,25 +50,69 @@ class AdminModelView(ModelView):
         return redirect(url_for(login_manager.login_view, next=request.url))
 
 
-@app.route('/create_project', methods=['POST'])
-@login_required
-def create_project():
+def random_name(obj, file_data):
+    return str(uuid.uuid4()) + ".csv"
 
-    form = CreateProjectForm() # FlaskForm implicitely pass the request data to the form
 
-    if form.validate_on_submit():
+def validate_annotationtags(form, field):
+    data = field.data
+    if data and isinstance(data, FileStorage):
+        is_empty = True
+        for line in data:
+            is_empty = False
+            if not re.match(r'^[a-zA-Z0-9_\s]+,[a-zA-Z0-9_\s]+$', line.decode().strip()):
+                raise ValidationError('Wrong annotation file format.')
+        data.stream.seek(0) # needed to parse it later
+        if is_empty:
+            raise ValidationError('Annotation file is empty.')
 
-        try:
 
-            project = Project()
-            project.name = form.name.data
-            project.audio_root_url = form.audio_root_url.data
-            project.allowRegions = form.allow_regions.data
-            project.visualizationtype = VisualizationType(form.visualization_type.data)
+def validate_audios(form, field):
+    data = field.data
+    if data and isinstance(data, FileStorage):
+        is_empty = True
+        for line in data:
+            is_empty = False
+            if not re.match(r'.+(wav|mp3)$', line.decode().strip()):
+                raise ValidationError('Wrong audio list file format.')
+        data.stream.seek(0) # needed to parse it later
+        if is_empty:
+            raise ValidationError('Audio list file is empty.')
 
-            audios_file = form.audios.data
-            audios_filename = str(uuid.uuid4()) + ".csv"
-            project.audios_filename = audios_filename
+
+class ProjectAdminView(AdminModelView):    
+
+    form_excluded_columns = ['feedbacktype', 'audios', 'annotations']
+
+
+    def scaffold_form(self):
+        form_class = super(ProjectAdminView, self).scaffold_form()
+        form_class.audios_filename = flask_admin.form.FileUploadField(
+            base_path=os.path.join(app.config['UPLOAD_DIR'], 'audios'),
+            allow_overwrite=False,
+            namegen=random_name,
+            validators=[validate_audios])
+        form_class.annotations_filename = flask_admin.form.FileUploadField(
+            base_path=os.path.join(app.config['UPLOAD_DIR'], 'annotations'),
+            allow_overwrite=False,
+            namegen=random_name,
+            validators=[validate_annotationtags])
+        return form_class
+
+
+    def on_model_change(self, form, project, is_created):
+
+        audios_file = form.audios_filename.data
+        annotations_file = form.annotations_filename.data
+
+        if audios_file and isinstance(audios_file, FileStorage):
+
+            if not is_created:
+                # delete audio-project relationships
+                project.audios = []
+                self.session.add(project)
+
+            audios_file.stream.seek(0) # I need it here. Why ?
             for line in audios_file:
                 rel_path = line.decode().strip()
                 audio = Audio.query.filter(Audio.rel_path==rel_path).first()
@@ -71,22 +121,29 @@ def create_project():
                     audio.rel_path = line.decode().strip()
                 project.audios.append(audio)
             audios_file.stream.seek(0) # needed to save it all
-            audios_file.save(os.path.join(
-                app.config['UPLOAD_DIR'], 'audios', audios_filename
-            ))
 
+            if not is_created:
+                # delete orphan audios
+                self.session.query(Audio).\
+                    filter(~Audio.projects.any()).\
+                    delete(synchronize_session=False)
 
-            annotations_file = form.annotation_tags.data
-            annotations_filename = str(uuid.uuid4()) + ".csv"
-            project.annotations_filename = annotations_filename
+        if annotations_file and isinstance(annotations_file, FileStorage):
+
+            if not is_created:
+                # delete annotationtag-project relationships
+                project.annotationtags = []
+                self.session.add(project)
+
+            annotations_file.stream.seek(0) # I need it here. Why ?
             for line in annotations_file:
                 tagtype_name, anntag_name = line.decode().split(',')
                 tagtype = TagType.query.filter(TagType.name==tagtype_name).first()
                 if not tagtype:
                     tagtype = TagType()
                     tagtype.name = tagtype_name
-                    db.session.add(tagtype)
-                    db.commit()
+                    self.session.add(tagtype)
+                    self.session.commit()
                 anntag = AnnotationTag.query.filter(AnnotationTag.name==anntag_name).first()
                 if not anntag:
                     anntag = AnnotationTag()
@@ -94,26 +151,14 @@ def create_project():
                     anntag.tagtype_id = tagtype.id
                 project.annotationtags.append(anntag)
             annotations_file.stream.seek(0) # needed to save it all
-            annotations_file.save(os.path.join(
-                app.config['UPLOAD_DIR'], 'annotations', annotations_filename
-            ))
 
-            db.session.add(project)
-            db.session.commit()
-            
-            flash(
-                Markup("Project created. You can edit it <a href=\"{}\">here</a>.".format(
-                    url_for('project.index_view', id=1))),
-                "success");
-            
-            return '', 200
+            if not is_created:
+                # delete orphan annotation tags
+                self.session.query(AnnotationTag).\
+                    filter(~AnnotationTag.projects.any()).\
+                    delete(synchronize_session=False)
 
-        except exc.IntegrityError as e:
-            db.session.rollback()
-#            return jsonify({'errors': })
-
-    else:
-        return jsonify({'errors': form.errors})
+        self.session.commit()
 
 
 @app.route('/get_annotations', methods=['GET'])
