@@ -63,7 +63,7 @@ def get_task(project_id):
         data = {}
 
         annotation_tags = proj.annotationtags
-        tagtypes = annotation_tags.with_entities(TagType).all()
+        tagtypes = db.session.query(TagType).join(AnnotationTag).filter(AnnotationTag.projects.any(Project.id==project_id)).all()
 
         data["project_id"] = project_id
         data["audio_id"] = audio.id
