@@ -3,9 +3,9 @@ from flask import render_template, redirect, request, jsonify, url_for, flash
 from flask_login import login_required, current_user
 from sqlalchemy.sql.expression import func
 
-from . import app, db
-from .models import Project, AnnotationTag, Audio, Annotation, TagType
-from .forms import ProjectForm
+from audiolabeling import app, db
+from audiolabeling.models import Project, AnnotationTag, Audio, Annotation, TagType
+from audiolabeling.forms import ProjectForm
 
 @app.route('/')
 def index():

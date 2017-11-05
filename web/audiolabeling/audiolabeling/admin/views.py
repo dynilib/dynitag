@@ -14,7 +14,7 @@ from werkzeug.datastructures import FileStorage
 
 from audiolabeling import app, db, login_manager
 from audiolabeling.admin.forms import CreateProjectForm, GetAnnotationsForm
-from audiolabeling.models import Project, Audio, AnnotationTag, TagType, FeedbackType, VisualizationType
+from audiolabeling.models import Project, Audio, AnnotationTag, TagType, FeedbackType, VisualizationType, User, Annotation
 from audiolabeling.admin.fields import CustomAdminConverter
 
 
@@ -188,7 +188,10 @@ def get_annotations():
             "annotations": annotations
         })
 
+    users = User.query.join(Annotation).filter(Annotation.project_id==project_id).all()
+
     data = {
+        "users": [{"id": u.id, "name": u.username, "email": u.email} for u in users],
         "project": project.name,
         "audio_root_url": project.audio_root_url,
         "audios": audios

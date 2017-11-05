@@ -1,0 +1,3 @@
+dropdb audiolabeling 
+createdb -O flask audiolabeling
+

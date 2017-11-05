@@ -1,3 +1,4 @@
 .cache
+migrations
 __pycache__/
 *.py[cod]

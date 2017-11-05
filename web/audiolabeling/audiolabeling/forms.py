@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import SelectField
 
 
-from .models import Project
+from audiolabeling.models import Project
 
 
 class ProjectForm(FlaskForm):
