@@ -39,10 +39,6 @@ div#home #title {
     color: #23527c; /*same as bootstrap.css*/
 }
 
-.al-form{
-    display: none;
-}
-
 .al-form dd{
     margin-bottom: 1em;
 }
@@ -50,10 +46,6 @@ div#home #title {
 .al-form .error{
     margin-left: 1em;
     color: #ff0000;
-}
-
-.al-form input[type="file"]{
-    display: inline;
 }
 
 img#logo {

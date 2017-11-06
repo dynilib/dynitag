@@ -13,7 +13,7 @@ from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
 
 from audiolabeling import app, db, login_manager
-from audiolabeling.admin.forms import CreateProjectForm, GetAnnotationsForm
+from audiolabeling.admin.forms import GetAnnotationsForm
 from audiolabeling.models import Project, Audio, AnnotationTag, TagType, FeedbackType, VisualizationType, User, Annotation
 from audiolabeling.admin.fields import CustomAdminConverter
 
