@@ -283,7 +283,11 @@ AnnotationStages.prototype = {
 
     // Check that all the annotations have the required tags, if not alert the user
     annotationDataValidationCheck: function() {
-        if (this.wavesurfer.regions) {
+        if (this.allowRegions && $.isEmptyObject(this.wavesurfer.regions.list)) {
+            Message.notifyAlert('Please select a region.'); 
+            return false;
+        }
+        else{
             for (var region_id in this.wavesurfer.regions.list) {
                 var region = this.wavesurfer.regions.list[region_id];
                 var hasAllAnnotations = true;
@@ -299,6 +303,7 @@ AnnotationStages.prototype = {
                 }
             }
         }
+
         return true;
     },
 
