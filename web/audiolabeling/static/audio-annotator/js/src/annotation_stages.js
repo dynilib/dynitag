@@ -594,7 +594,7 @@ AnnotationStages.prototype = {
         });
 
         // If the region has all its required tags, deselect the region and go back to stage 1
-        if (hasAllAnnotations) {
+        if (this.allowRegions && hasAllAnnotations) {
             this.updateStage(1);
         }
     },
