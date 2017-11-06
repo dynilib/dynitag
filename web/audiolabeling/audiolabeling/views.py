@@ -2,6 +2,7 @@ import os
 from flask import render_template, redirect, request, jsonify, url_for, flash
 from flask_login import login_required, current_user
 from sqlalchemy.sql.expression import func
+from sqlalchemy import and_
 
 from audiolabeling import app, db
 from audiolabeling.models import Project, AnnotationTag, Audio, Annotation, TagType
@@ -43,7 +44,7 @@ def get_task(project_id):
 
     # Get audios from current project that have not been annotated by the current user
     query = Audio.query.filter(Audio.projects.any(Project.id==project_id))\
-        .filter(~Audio.annotations.any(Annotation.user_id==current_user.id))
+        .filter(~Audio.annotations.any(and_(Annotation.user_id==current_user.id, Annotation.project_id==project_id)))
 
     # Get the audio with annotations from proj.n_annotations_per_file users or more to filter the query
     if proj.n_annotations_per_file:
@@ -76,15 +77,16 @@ def get_task(project_id):
                             "Highlight &amp; Label Each Sound",
                             "1. &nbsp; Familiarize yourself with the list of sound labels under the audio recording.", 
                             "2. &nbsp; Click the play button and listen to the recording.", 
-                            "3. &nbsp; For each sound event that you hear click and drag on the visualization to create a new annotation.",
-                            "4. &nbsp; When creating a new annotation be as precise as possible.",
+                            "3. &nbsp; For each sound event that you hear click and drag on the visualization to create a new annotation segment.",
+                            "4. &nbsp; When creating a new annotation segment be as precise as possible.",
+                            "5. &nbsp; Make sure the correct annotation tags are selected before submitting.",
                         ]
         else:
             data["instructions"] = [
                             "Highlight &amp; Label Each Sound",
                             "1. &nbsp; Familiarize yourself with the list of sound labels under the audio recording.", 
                             "2. &nbsp; Click the play button and listen to the recording.", 
-                            "3. &nbsp; Make sure the correct annotations are selected before submitting.",
+                            "3. &nbsp; Make sure the correct annotation tags are selected before submitting.",
                         ]
         return jsonify({"task": data})
 
