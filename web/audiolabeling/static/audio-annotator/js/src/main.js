@@ -62,6 +62,11 @@ function Annotator() {
     // Create the play button and time that appear below the wavesurfer
     this.playBar = new PlayBar(this.wavesurfer);
     this.playBar.create();
+    
+    // Create the annotation stages that appear below the wavesurfer. The stages contain tags 
+    // the users use to label a region in the audio clip
+    this.stages = new AnnotationStages(this.wavesurfer, this.hiddenImage, allowRegions);
+    this.stages.create();
 
     // Create Workflow btns (submit and exit)
     this.workflowBtns = new WorkflowBtns();
@@ -127,15 +132,9 @@ Annotator.prototype = {
             // Update the different tags the user can use to annotate, also update the solutions to the
             // annotation task if the user is suppose to recieve feedback
             var annotationTags = my.currentTask.annotationTags;
-            var alwaysShowTags = my.currentTask.alwaysShowTags;
             var tutorialVideoURL = my.currentTask.tutorialVideoURL;
+            var alwaysShowTags = my.currentTask.alwaysShowTags;
             var instructions = my.currentTask.instructions;
-            var allowRegions = my.currentTask.allowRegions;
-
-            // Create the annotation stages that appear below the wavesurfer. The stages contain tags 
-            // the users use to label a region in the audio clip
-            my.stages = new AnnotationStages(my.wavesurfer, my.hiddenImage, allowRegions);
-            my.stages.create();
             my.stages.reset(
                 annotationTags,
                 annotationSolutions,

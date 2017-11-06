@@ -27,9 +27,12 @@ def projects():
 def project(project_id):
     get_url = '/get_task/' + str(project_id)
     post_url = '/post_annotation'
+    proj = Project.query.get(project_id)
+    allow_regions = 'true' if proj.allowRegions else 'false'
     return render_template('project.html',
                            get_url=get_url,
-                           post_url = post_url)
+                           post_url=post_url,
+                           allow_regions=allow_regions)
 
 #
 #
@@ -69,7 +72,6 @@ def get_task(project_id):
         data["audio_id"] = audio.id
         data["feedback"] = proj.feedbacktype.name.lower()
         data["visualization"] = proj.visualizationtype.name.lower()
-        data["allowRegions"] = proj.allowRegions
         data["annotationTags"] = {}
         for tagtype in tagtypes:
             data["annotationTags"][tagtype.name] = [ann_tag.name for ann_tag in annotation_tags.filter(AnnotationTag.tagtype==tagtype).all()]

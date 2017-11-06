@@ -242,9 +242,9 @@ AnnotationStages.prototype = {
         this.addWaveSurferEvents();
 
         // Create dom
-        this.stageOneView.create();
+        this.stageOneView.create(this.allowRegions);
 //        this.stageTwoView.create();
-        this.stageThreeView.create();
+        this.stageThreeView.create(this.allowRegions);
 
     },
 
