@@ -34,14 +34,6 @@ def project(project_id):
                            post_url=post_url,
                            allow_regions=allow_regions)
 
-#
-#
-#	form = ProjectForm(request.POST)
-#    if request.method == 'POST' and form.validate():
-#        project = form.project.data
-#        redirect(url_for('task', project=project))
-#    return render_response('projects.html', form=form)
-
 
 @app.route('/get_task/<project_id>', methods=['GET', 'POST'])
 @login_required
