@@ -144,7 +144,7 @@ class ProjectAdminView(AdminModelView):
                     tagtype.name = tagtype_name
                     self.session.add(tagtype)
                     self.session.commit()
-                anntag = AnnotationTag.query.filter(AnnotationTag.name==anntag_name).first()
+                anntag = AnnotationTag.query.filter(AnnotationTag.name==anntag_name).filter(AnnotationTag.tagtype_id==tagtype.id).first()
                 if not anntag:
                     anntag = AnnotationTag()
                     anntag.name = anntag_name

@@ -4,6 +4,7 @@ from datetime import datetime
 from flask import redirect, request, url_for
 from sqlalchemy.ext.hybrid import hybrid_method, hybrid_property
 from sqlalchemy.event import listens_for
+from sqlalchemy.schema import UniqueConstraint
 from flask_login import current_user
 
 from audiolabeling import app, db, bcrypt, login_manager
@@ -180,11 +181,12 @@ class AnnotationTag(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     tagtype_id = db.Column(db.Integer, db.ForeignKey(TagType.id), nullable=False)
-    name = db.Column(db.String, unique=True, nullable=False)
+    name = db.Column(db.String, nullable=False)
     annotations = db.relationship('Annotation',
                                   backref='annotationtag',
                                   lazy='dynamic',
                                   cascade='all')
+    __table_args__ = (UniqueConstraint('name', 'tagtype_id'),)
 
     def __repr__(self):
         return '<name {}>'.format(self.name)
