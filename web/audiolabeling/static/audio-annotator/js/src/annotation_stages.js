@@ -133,29 +133,29 @@ StageThreeView.prototype = {
 
     // Replace the annotation elements with the new elements that contain the
     // tags in the annotationTags list
-    updateTagContents: function(annotationTags) {
+    updateTagContents: function(annotationTypes, annotationTags) {
         var my = this;
         $('.tag_container', this.dom).empty();
-        $.each(annotationTags, function (tagType, tags){
-            var annotation = my.createAnnotationTags(tagType, tags);
+        $.each(annotationTags, function (tagTypeId, tags){
+            var annotation = my.createAnnotationTags(annotationTypes[tagTypeId], tagTypeId, tags);
             $('.tag_container', my.dom).append([annotation]);
         });
     },
 
     // Create annotation tag elements
-    createAnnotationTags: function(tagType, tags) {
+    createAnnotationTags: function(tagTypeName, tagTypeId, tags) {
 
         var my = this;
 
         var annotation = $('<div>');
         var annotationLabel = $('<div>', {
             class: 'stage_3_label',
-            text: tagType,
+            text: tagTypeName,
         });
 
         var annotationContainer = $('<div>', {
             class: 'annotation_tags',
-            id: tagType
+            id: tagTypeId
         });
 
         tags.forEach(function (tagName) {
@@ -165,7 +165,7 @@ StageThreeView.prototype = {
             });
             // When a tag is clicked fire the 'change-tag' event with what annotation tag it is
             tag.click(function () {
-                $(my).trigger('change-tag', [{annotationType: tagType, annotation: tagName}]);
+                $(my).trigger('change-tag', [{annotationType: tagTypeId, annotation: tagName}]);
             });
             annotationContainer.append(tag);
         });
@@ -432,12 +432,12 @@ AnnotationStages.prototype = {
     },
 
     // Reset field values and update the annotation tags and annotation solutions
-    reset: function(annotationTags, solution, alwaysShowTags) {
+    reset: function(annotationTypes, annotationTags, solution, alwaysShowTags) {
         this.clear();
 
         // Update all Tags' Contents
         this.alwaysShowTags = alwaysShowTags || false;
-        this.updateContentsTags(annotationTags);
+        this.updateContentsTags(annotationTypes, annotationTags);
         // Update solution set
         this.annotationSolutions = solution.annotations || [];
 
@@ -450,8 +450,9 @@ AnnotationStages.prototype = {
     },
 
     // Update stage 3 dom with new proximity tags and annotation tags
-    updateContentsTags: function(annotationTags) {
+    updateContentsTags: function(annotationTypes, annotationTags) {
         this.stageThreeView.updateTagContents(
+            annotationTypes,
             annotationTags
         );
     },

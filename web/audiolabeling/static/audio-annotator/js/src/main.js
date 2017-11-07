@@ -131,11 +131,13 @@ Annotator.prototype = {
 
             // Update the different tags the user can use to annotate, also update the solutions to the
             // annotation task if the user is suppose to recieve feedback
+            var annotationTypes = my.currentTask.annotationTypes;
             var annotationTags = my.currentTask.annotationTags;
             var tutorialVideoURL = my.currentTask.tutorialVideoURL;
             var alwaysShowTags = my.currentTask.alwaysShowTags;
             var instructions = my.currentTask.instructions;
             my.stages.reset(
+                annotationTypes,
                 annotationTags,
                 annotationSolutions,
                 alwaysShowTags

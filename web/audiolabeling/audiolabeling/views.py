@@ -65,9 +65,11 @@ def get_task(project_id):
         data["audio_id"] = audio.id
         data["feedback"] = proj.feedbacktype.name.lower()
         data["visualization"] = proj.visualizationtype.name.lower()
+        data["annotationTypes"] = {}
         data["annotationTags"] = {}
         for tagtype in tagtypes:
-            data["annotationTags"][tagtype.name] = [ann_tag.name for ann_tag in annotation_tags.filter(AnnotationTag.tagtype==tagtype).all()]
+            data["annotationTypes"][tagtype.id] = tagtype.name
+            data["annotationTags"][tagtype.id] = [ann_tag.name for ann_tag in annotation_tags.filter(AnnotationTag.tagtype==tagtype).all()]
         data["url"] = os.path.join(proj.audio_root_url, audio.rel_path)
         data["tutorialVideoURL"] = "https://www.youtube.com/embed/Bg8-83heFRM"
         data["alwaysShowTags"] = True
@@ -108,10 +110,10 @@ def post_annotation():
         start_time = region["start"]
         end_time = region["end"]
 
-        for _, v in region["annotations"].items():
+        for tagtype_id, tag_name in region["annotations"].items():
             
             ann = Annotation()
-            ann.annotationtag_id = AnnotationTag.query.filter(AnnotationTag.name==v)[0].id
+            ann.annotationtag_id = AnnotationTag.query.filter(and_(AnnotationTag.name==tag_name, AnnotationTag.tagtype_id==tagtype_id)).first().id
             ann.audio_id = audio_id
             ann.project_id = project_id
             ann.user_id = current_user.id
