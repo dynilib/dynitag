@@ -6,7 +6,7 @@ from flask import redirect, request, jsonify, flash, url_for, Markup, Response
 from wtforms import Form
 from wtforms.validators import ValidationError
 import flask_admin
-from sqlalchemy import exc
+from sqlalchemy import exc, and_
 from flask_admin.contrib.sqla import ModelView
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
@@ -173,7 +173,7 @@ def get_annotations():
     audios = []
     for audio in project.audios:
         annotations = []
-        for ann in audio.annotations:
+        for ann in Annotation.query.filter(and_(Annotation.project_id==project_id, Annotation.audio_id==audio.id)):
             annotations.append({
                 "id": ann.id,
                 "annotationtag_id": ann.annotationtag_id,
