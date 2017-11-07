@@ -189,9 +189,11 @@ def get_annotations():
         })
 
     users = User.query.join(Annotation).filter(Annotation.project_id==project_id).all()
+    annotationtags = AnnotationTag.query.filter(AnnotationTag.projects.any(Project.id==project_id)).all()
 
     data = {
         "users": [{"id": u.id, "name": u.username, "email": u.email} for u in users],
+        "annotation_tags": [{"id": a.id, "name": a.name, "tagtype_name": a.tagtype.name} for a in annotationtags],
         "project": project.name,
         "audio_root_url": project.audio_root_url,
         "audios": audios
