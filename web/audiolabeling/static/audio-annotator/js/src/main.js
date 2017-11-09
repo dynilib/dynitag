@@ -136,16 +136,24 @@ Annotator.prototype = {
             var tutorialVideoURL = my.currentTask.tutorialVideoURL;
             var alwaysShowTags = my.currentTask.alwaysShowTags;
             var instructions = my.currentTask.instructions;
+            var stats = my.currentTask.stats;
             my.stages.reset(
                 annotationTypes,
                 annotationTags,
                 annotationSolutions,
                 alwaysShowTags
             );
+            
+            // add stats
+            var statsContainer = $('#stats');
+            statsContainer.empty();
+            if (typeof stats !== "undefined"){
+                statsContainer.html(stats);
+            }
 /*
             // set video url
             $('#tutorial-video').attr('src', tutorialVideoURL);
-
+*/
             // add instructions
             var instructionsContainer = $('#instructions-container');
             instructionsContainer.empty();
@@ -175,7 +183,7 @@ Annotator.prototype = {
                 $('#instructions-container').hide();
                 $('#trigger').hide();
             }
-*/
+
             // Update the visualization type and the feedback type and load in the new audio clip
             my.wavesurfer.params.visualization = my.currentTask.visualization; // invisible, spectrogram, waveform
             my.wavesurfer.params.feedback = my.currentTask.feedback; // hiddenImage, silent, notify, none 

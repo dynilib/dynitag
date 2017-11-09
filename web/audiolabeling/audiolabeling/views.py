@@ -74,6 +74,17 @@ def get_task(project_id):
         data["tutorialVideoURL"] = "https://www.youtube.com/embed/Bg8-83heFRM"
         data["alwaysShowTags"] = True
 
+        # stats
+        n_tagtypes = db.session.query(db.func.count(AnnotationTag.tagtype_id.distinct())).filter(Project.id==project_id).join(Project.annotationtags).group_by(Project.id).one()[0]
+        data["stats"] = "You annotated {} files. Total number of annotations: {} / {} ({} files, {} annotation(s) per file needed)"\
+            .format(
+                int(proj.annotations.filter(Annotation.user_id==current_user.id).count() / n_tagtypes),
+                int(proj.annotations.count() / n_tagtypes),
+                proj.audios.count() * (proj.n_annotations_per_file if proj.n_annotations_per_file else 1),
+                proj.audios.count(),
+                proj.n_annotations_per_file if proj.n_annotations_per_file else 1
+            )
+
         if proj.allowRegions:
             data["instructions"] = [
                             "Highlight &amp; Label Each Sound",
