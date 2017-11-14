@@ -60,7 +60,7 @@ def validate_annotationtags(form, field):
         is_empty = True
         for line in data:
             is_empty = False
-            if not re.match(r'^[a-zA-Z0-9_\s]+,[a-zA-Z0-9_\s]+$', line.decode().strip()):
+            if not re.match(r'^[a-zA-Z0-9_\s\?]+,[a-zA-Z0-9_\s]+$', line.decode().strip()):
                 raise ValidationError('Wrong annotation file format.')
         data.stream.seek(0) # needed to parse it later
         if is_empty:
