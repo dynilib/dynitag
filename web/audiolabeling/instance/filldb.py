@@ -12,7 +12,7 @@ from audiolabeling.models import User
 with app.app_context():
 
     # Insert user data
-    admin = User(username='admin', email='admin@gmail.com', plaintext_password='password1234', role='admin')
+    admin = User(username='admin', email='admin@gmail.com', plaintext_password='changeme', role='admin')
     db.session.add(admin)
 
     # Commit
