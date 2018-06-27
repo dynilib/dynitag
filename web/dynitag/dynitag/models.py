@@ -7,7 +7,7 @@ from sqlalchemy.event import listens_for
 from sqlalchemy.schema import UniqueConstraint
 from flask_login import current_user
 
-from audiolabeling import app, db, bcrypt, login_manager
+from dynitag import app, db, bcrypt, login_manager
 
 
 class User(db.Model):

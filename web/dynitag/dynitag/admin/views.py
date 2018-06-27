@@ -12,10 +12,10 @@ from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
 
-from audiolabeling import app, db, login_manager
-from audiolabeling.admin.forms import GetAnnotationsForm
-from audiolabeling.models import Project, Audio, AnnotationTag, TagType, FeedbackType, VisualizationType, User, Annotation
-from audiolabeling.admin.fields import CustomAdminConverter
+from dynitag import app, db, login_manager
+from dynitag.admin.forms import GetAnnotationsForm
+from dynitag.models import Project, Audio, AnnotationTag, TagType, FeedbackType, VisualizationType, User, Annotation
+from dynitag.admin.fields import CustomAdminConverter
 
 
 class MyHomeView(flask_admin.AdminIndexView):

@@ -4,8 +4,8 @@ import shutil
 
 from flask import url_for
 
-from audiolabeling import db, app
-from audiolabeling.models import User
+from dynitag import db, app
+from dynitag.models import User
 
 
 # Create some initial data and commit to the database

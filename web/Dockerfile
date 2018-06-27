@@ -20,12 +20,12 @@ ENTRYPOINT ["/entrypoint.sh"]
 # Add demo app
 
 ENV PYTHONPATH /myapp
-ENV FLASK_APP audiolabeling
+ENV FLASK_APP dynitag
 ENV UWSGI_INI /myapp/uwsgi.ini
 WORKDIR /myapp
 
 #RUN pip install flask
-COPY audiolabeling/requirements.txt /tmp/
+COPY dynitag/requirements.txt /tmp/
 RUN pip install -r /tmp/requirements.txt
 
 CMD ["/usr/bin/supervisord"]

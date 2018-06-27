@@ -4,9 +4,9 @@ from flask_login import login_required, current_user
 from sqlalchemy.sql.expression import func
 from sqlalchemy import and_
 
-from audiolabeling import app, db
-from audiolabeling.models import Project, AnnotationTag, Audio, Annotation, TagType
-from audiolabeling.forms import ProjectForm
+from dynitag import app, db
+from dynitag.models import Project, AnnotationTag, Audio, Annotation, TagType
+from dynitag.forms import ProjectForm
 
 @app.route('/')
 def index():

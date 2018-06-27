@@ -19,8 +19,8 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "users.login"
 
-from audiolabeling import views
-from audiolabeling import models
+from dynitag import views
+from dynitag import models
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -30,7 +30,7 @@ def load_user(user_id):
 # blueprints #
 ##############
 
-from audiolabeling.users.views import users_blueprint
+from dynitag.users.views import users_blueprint
 
 # register the blueprints
 app.register_blueprint(users_blueprint, url_prefix='/users')
@@ -39,7 +39,7 @@ app.register_blueprint(users_blueprint, url_prefix='/users')
 # flask-admin #
 ###############
 
-import audiolabeling.admin.views as admin_views
+import dynitag.admin.views as admin_views
 
 admin = Admin(app, name='Audiolabeling', template_mode='bootstrap3', index_view=admin_views.MyHomeView(), base_template='admin/base_with_header.html')
 admin.add_view(admin_views.AdminModelView(models.User, db.session))

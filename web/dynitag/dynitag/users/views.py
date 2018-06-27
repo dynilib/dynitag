@@ -13,8 +13,8 @@ from itsdangerous import URLSafeTimedSerializer
 from datetime import datetime
 
 from .forms import RegisterForm, LoginForm, EmailForm, PasswordForm
-from audiolabeling import db, mail, app
-from audiolabeling.models import User
+from dynitag import db, mail, app
+from dynitag.models import User
 
 
 ################

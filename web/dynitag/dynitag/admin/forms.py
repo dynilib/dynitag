@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import SelectField
 
-from audiolabeling.models import Project
+from dynitag.models import Project
 
 
 class GetAnnotationsForm(FlaskForm):
