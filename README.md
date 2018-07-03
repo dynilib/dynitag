@@ -1,3 +1,5 @@
+Dynitag is a web-based collaborative audio annotator tool, heavily based on https://github.com/CrowdCurio/audio-annotator.
+
 # Install
 
 ## Clone repository
