@@ -28,6 +28,11 @@ $ docker build -t dynitag web
 $ docker run -d --name dynitag --link dynitag_db:dynitag_db -p 8000:80 \
 -v $(pwd)/web/dynitag:/myapp -v $(pwd)/data/upload:/upload dynitag
 ```
+Hint: If you are behind a proxy and have the `$http_proxy` and `$https_proxy` environment variables set correctly for your shell, you can pass them on to the build command with:
+```
+$ docker build --build-arg http_proxy="$http_proxy" --build-arg https_proxy="$https_proxy" -t dynitag web
+```
+Otherwise pip will fail with the error message `Connection to pypi.python.org timed out.`.
 
 ## Create database (check [flask-migrate](https://github.com/miguelgrinberg/Flask-Migrate) for details)
 
