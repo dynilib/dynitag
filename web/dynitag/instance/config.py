@@ -1,8 +1,8 @@
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-db_ip = os.environ.get("ANNOTATOR_DB_PORT_5432_TCP_ADDR") # ip of the linked postgres container (<linked container name>_PORT_<num port>_<protocol>_ADDR)
-db_port = os.environ.get("ANNOTATOR_DB_PORT_5432_TCP_PORT") # port of the linked postgres container (<linked container name>_PORT_<num port>_<protocol>_ADDR)
+db_ip = os.environ.get("DYNITAG_DB_PORT_5432_TCP_ADDR") # ip of the linked postgres container (<linked container name>_PORT_<num port>_<protocol>_ADDR)
+db_port = os.environ.get("DYNITAG_DB_PORT_5432_TCP_PORT") # port of the linked postgres container (<linked container name>_PORT_<num port>_<protocol>_ADDR)
 
 DEBUG = True
 WTF_CSRF_ENABLED = True
