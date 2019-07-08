@@ -27,10 +27,11 @@ class User(db.Model):
     role = db.Column(db.String, default='user')
     annotations = db.relationship('Annotation', backref='user', lazy='dynamic')
 
-    def __init__(self, username, email, plaintext_password, email_confirmation_sent_on=None, role='user'):
+    def __init__(self, username='', email='', plaintext_password='', email_confirmation_sent_on=None, role='user'):
         self.username = username
         self.email = email
-        self.password = plaintext_password
+        if plaintext_password:
+            self.password = plaintext_password
         self.authenticated = False
         self.email_confirmation_sent_on = email_confirmation_sent_on
         self.email_confirmed = False

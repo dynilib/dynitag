@@ -3,8 +3,8 @@ import uuid
 import re
 
 from flask import redirect, request, jsonify, flash, url_for, Markup, Response
-from wtforms import Form
-from wtforms.validators import ValidationError
+from wtforms import Form, PasswordField
+from wtforms.validators import ValidationError, DataRequired
 import flask_admin
 from sqlalchemy import exc, and_
 from flask_admin.contrib.sqla import ModelView
@@ -78,6 +78,15 @@ def validate_audios(form, field):
         data.stream.seek(0) # needed to parse it later
         if is_empty:
             raise ValidationError('Audio list file is empty.')
+
+
+class UserAdminView(AdminModelView):
+    column_exclude_list = ['password']
+    form_excluded_columns = ['authenticated', 'current_logged_in',
+                             'last_logged_in', 'email_confirmation_sent_on',
+                             'email_confirmed_on']
+    form_extra_fields = {'password': PasswordField(
+            'Password', [DataRequired()])}
 
 
 class ProjectAdminView(AdminModelView):    
