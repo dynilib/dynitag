@@ -65,7 +65,7 @@ function Annotator() {
     
     // Create the annotation stages that appear below the wavesurfer. The stages contain tags 
     // the users use to label a region in the audio clip
-    this.stages = new AnnotationStages(this.wavesurfer, this.hiddenImage, allowRegions);
+    this.stages = new AnnotationStages(this.wavesurfer, this.hiddenImage, allowRegions, allowMultitag);
     this.stages.create();
 
     // Create Workflow btns (submit and exit)

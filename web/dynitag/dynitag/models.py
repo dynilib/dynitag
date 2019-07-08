@@ -134,6 +134,7 @@ class Project(db.Model):
     feedbacktype = db.Column(db.Enum(FeedbackType), default=FeedbackType.NONE, nullable=False)
     visualizationtype = db.Column(db.Enum(VisualizationType), default=VisualizationType.SPECTROGRAM, nullable=False)
     allowRegions = db.Column(db.Boolean, nullable=False)
+    allowMultitag = db.Column(db.Boolean, nullable=False)
     n_annotations_per_file = db.Column(db.Integer, nullable=True)
     annotationtags = db.relationship('AnnotationTag',
                                      secondary=annotationtag_project_rel,

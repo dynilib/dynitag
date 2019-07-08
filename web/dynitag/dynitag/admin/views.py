@@ -38,6 +38,7 @@ class AdminModelView(ModelView):
     model_form_converter = CustomAdminConverter
     column_labels = dict(name='Name', visualizationtype='Visualization Type',
                          feedbacktype='Feedback Type', allowRegions='Allow Regions',
+                         allowMultitag='Allow Multitags',
                          n_annotations_per_file='Number of annotations per file',
                          audios_filename='Audio list filename',
                          annotations_filename='Annotations filename')

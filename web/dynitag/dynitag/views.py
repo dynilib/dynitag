@@ -30,10 +30,12 @@ def project(project_id):
     post_url = '/post_annotation'
     proj = Project.query.get(project_id)
     allow_regions = 'true' if proj.allowRegions else 'false'
+    allow_multitag = 'true' if proj.allowMultitag else 'false'
     return render_template('project.html',
                            get_url=get_url,
                            post_url=post_url,
-                           allow_regions=allow_regions)
+                           allow_regions=allow_regions,
+                           allow_multitag=allow_multitag)
 
 
 @app.route('/get_task/<project_id>', methods=['GET', 'POST'])
@@ -132,19 +134,21 @@ def post_annotation():
         start_time = region["start"]
         end_time = region["end"]
 
-        for tagtype_id, tag_name in region["annotations"].items():
-            
-            ann = Annotation()
-            ann.annotationtag_id = AnnotationTag.query.filter(and_(AnnotationTag.name==tag_name, AnnotationTag.tagtype_id==tagtype_id)).first().id
-            ann.audio_id = audio_id
-            ann.project_id = project_id
-            ann.user_id = current_user.id
-            if project.allowRegions:
-                ann.start_time = start_time
-                ann.end_time = end_time
-            db.session.add(ann)
-            db.session.commit()
-            # TODO commit manage error
+        for tagtype_id, tag_names in region["annotations"].items():
+            for tag_name, selected in tag_names.items():
+                if not selected:
+                    continue
+                ann = Annotation()
+                ann.annotationtag_id = AnnotationTag.query.filter(and_(AnnotationTag.name==tag_name, AnnotationTag.tagtype_id==tagtype_id)).first().id
+                ann.audio_id = audio_id
+                ann.project_id = project_id
+                ann.user_id = current_user.id
+                if project.allowRegions:
+                    ann.start_time = start_time
+                    ann.end_time = end_time
+                db.session.add(ann)
+    db.session.commit()
+    # TODO commit manage error
     
     return (
         jsonify({
