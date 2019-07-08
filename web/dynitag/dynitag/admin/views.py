@@ -74,7 +74,7 @@ def validate_audios(form, field):
         is_empty = True
         for line in data:
             is_empty = False
-            if not re.match(r'.+(wav|mp3)$', line.decode().strip()):
+            if not re.match(r'.+(wav|mp3|ogg)$', line.decode().strip()):
                 raise ValidationError('Wrong audio list file format.')
         data.stream.seek(0) # needed to parse it later
         if is_empty:
