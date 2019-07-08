@@ -51,6 +51,7 @@ function Annotator() {
     var labels = Object.create(WaveSurfer.Labels);
     labels.init({
         wavesurfer: this.wavesurfer,
+        rowHeight: 15,
         container: '.labels'
     });
 
