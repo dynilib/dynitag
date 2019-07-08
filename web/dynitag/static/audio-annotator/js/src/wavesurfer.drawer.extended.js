@@ -59,7 +59,7 @@ WaveSurfer.util.extend(WaveSurfer.Drawer.Canvas, {
             var length = fftSamples / 2 + 1;
             var array = new Uint8Array(length);
             for (var j = 0; j < length; j++) {
-                array[j] = Math.max(-255, Math.log10(spectrum[j])*45);
+                array[j] = Math.max(-255, Math.log(1+1e4*spectrum[j])*35);
             }
             frequencies.push(array);
             currentOffset += (fftSamples - noverlap);
