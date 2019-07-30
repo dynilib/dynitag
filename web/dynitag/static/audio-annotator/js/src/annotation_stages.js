@@ -96,13 +96,15 @@ function StageThreeView() {
     this.dom = null;
     this.editOptionsDom = null;
     this.allowRegions = true;
+    this.allowMultitag = false;
 }
 
 StageThreeView.prototype = {
     // Create dom
-    create: function(allowRegions) {
+    create: function(allowRegions, allowMultitag) {
         var my = this;
         my.allowRegions = allowRegions;
+        my.allowMultitag = allowMultitag;
         var container = $('<div>');
 
         var message = $('<div>', {
@@ -196,7 +198,7 @@ StageThreeView.prototype = {
         $.each(region.annotations, function(k, v) {
 
             var selectedTags = $('#' + k + ' > .annotation_tag', this.dom).filter(function () {
-                return this.innerHTML === v;
+                return v[this.innerHTML];
             });
             selectedTags.addClass('selected');       
         });
@@ -209,7 +211,7 @@ StageThreeView.prototype = {
  * Dependencies:
  *   jQuey, audio-annotator.css, Wavesurfer (lib/wavesurfer.js), Message (src/message.js)
  */
-function AnnotationStages(wavesurfer, hiddenImage, allowRegions) {
+function AnnotationStages(wavesurfer, hiddenImage, allowRegions, allowMultitag) {
     this.currentStage = 0;
     this.currentRegion = null;
     this.stageOneView = new StageOneView();
@@ -224,6 +226,7 @@ function AnnotationStages(wavesurfer, hiddenImage, allowRegions) {
     this.events = [];
     this.alwaysShowTags = false;
     this.allowRegions = allowRegions;
+    this.allowMultitag = allowMultitag;
 
     // These are not reset, since they should only be shown for the first clip
     this.shownTagHint = false;
@@ -244,7 +247,7 @@ AnnotationStages.prototype = {
         // Create dom
         this.stageOneView.create(this.allowRegions);
 //        this.stageTwoView.create();
-        this.stageThreeView.create(this.allowRegions);
+        this.stageThreeView.create(this.allowRegions, this.allowMultitag);
 
     },
 
@@ -286,6 +289,9 @@ AnnotationStages.prototype = {
         if (this.allowRegions && $.isEmptyObject(this.wavesurfer.regions.list)) {
             Message.notifyAlert('Please select a region.'); 
             return false;
+        }
+        else if (this.allowMultitag) {
+            return true;
         }
         else{
             for (var region_id in this.wavesurfer.regions.list) {
@@ -567,9 +573,28 @@ AnnotationStages.prototype = {
         var annotationEventType = null;
         var currentRegion = this.currentRegion;
 
-        // Determine if the tags where added for the first time or just changed
-        if (data.annotation && data.annotation !== currentRegion.annotations[data.annotationType]) {
-            annotationEventType = currentRegion.annotations[data.annotationType] ? 'change' : 'add';
+        if (data.annotation) {
+            var tag = data.annotation;
+            var tags = currentRegion.annotations[data.annotationType];
+            // Determine if the tags where added for the first time or just changed
+            if (tags === undefined) {
+                annotationEventType = 'add';
+            }
+            else if (this.allowMultitag || !tags[tag]) {
+                annotationEventType = 'change';
+            }
+
+            // Determine the set of tags to set
+            if (tags === undefined || !this.allowMultitag) {
+                tags = {};
+            }
+            if (!tags.hasOwnProperty(data.annotation)) {
+                tags[tag] = true;
+            }
+            else {
+                tags[tag] = !tags[tag];
+            }
+            data.annotation = tags;
         }
 
         // Update the current region with the tag data
@@ -582,7 +607,7 @@ AnnotationStages.prototype = {
             this.trackEvent(
                 annotationEventType + '-annotation-label',
                 currentRegion.id,
-                currentRegion.annotations[data.annotationType]
+                tag
             );
         }
 
@@ -595,7 +620,7 @@ AnnotationStages.prototype = {
         });
 
         // If the region has all its required tags, deselect the region and go back to stage 1
-        if (this.allowRegions && hasAllAnnotations) {
+        if (this.allowRegions && hasAllAnnotations && !this.allowMultitag) {
             this.updateStage(1);
         }
     },

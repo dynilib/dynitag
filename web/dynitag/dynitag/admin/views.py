@@ -3,8 +3,8 @@ import uuid
 import re
 
 from flask import redirect, request, jsonify, flash, url_for, Markup, Response
-from wtforms import Form
-from wtforms.validators import ValidationError
+from wtforms import Form, PasswordField
+from wtforms.validators import ValidationError, DataRequired
 import flask_admin
 from sqlalchemy import exc, and_
 from flask_admin.contrib.sqla import ModelView
@@ -38,6 +38,7 @@ class AdminModelView(ModelView):
     model_form_converter = CustomAdminConverter
     column_labels = dict(name='Name', visualizationtype='Visualization Type',
                          feedbacktype='Feedback Type', allowRegions='Allow Regions',
+                         allowMultitag='Allow Multitags',
                          n_annotations_per_file='Number of annotations per file',
                          audios_filename='Audio list filename',
                          annotations_filename='Annotations filename')
@@ -73,11 +74,20 @@ def validate_audios(form, field):
         is_empty = True
         for line in data:
             is_empty = False
-            if not re.match(r'.+(wav|mp3)$', line.decode().strip()):
+            if not re.match(r'.+(wav|mp3|ogg)$', line.decode().strip()):
                 raise ValidationError('Wrong audio list file format.')
         data.stream.seek(0) # needed to parse it later
         if is_empty:
             raise ValidationError('Audio list file is empty.')
+
+
+class UserAdminView(AdminModelView):
+    column_exclude_list = ['password']
+    form_excluded_columns = ['authenticated', 'current_logged_in',
+                             'last_logged_in', 'email_confirmation_sent_on',
+                             'email_confirmed_on']
+    form_extra_fields = {'password': PasswordField(
+            'Password', [DataRequired()])}
 
 
 class ProjectAdminView(AdminModelView):    

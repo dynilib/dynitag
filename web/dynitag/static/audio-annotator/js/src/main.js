@@ -35,7 +35,7 @@ function Annotator() {
     });
 
     // Create wavesurfer (audio visualization component)
-    var height = 256;
+    var height = 512;
     this.wavesurfer = Object.create(WaveSurfer);
     this.wavesurfer.init({
         container: '.audio_visual',
@@ -51,6 +51,7 @@ function Annotator() {
     var labels = Object.create(WaveSurfer.Labels);
     labels.init({
         wavesurfer: this.wavesurfer,
+        rowHeight: 15,
         container: '.labels'
     });
 
@@ -65,7 +66,7 @@ function Annotator() {
     
     // Create the annotation stages that appear below the wavesurfer. The stages contain tags 
     // the users use to label a region in the audio clip
-    this.stages = new AnnotationStages(this.wavesurfer, this.hiddenImage, allowRegions);
+    this.stages = new AnnotationStages(this.wavesurfer, this.hiddenImage, allowRegions, allowMultitag);
     this.stages.create();
 
     // Create Workflow btns (submit and exit)

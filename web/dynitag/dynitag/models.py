@@ -27,10 +27,11 @@ class User(db.Model):
     role = db.Column(db.String, default='user')
     annotations = db.relationship('Annotation', backref='user', lazy='dynamic')
 
-    def __init__(self, username, email, plaintext_password, email_confirmation_sent_on=None, role='user'):
+    def __init__(self, username='', email='', plaintext_password='', email_confirmation_sent_on=None, role='user'):
         self.username = username
         self.email = email
-        self.password = plaintext_password
+        if plaintext_password:
+            self.password = plaintext_password
         self.authenticated = False
         self.email_confirmation_sent_on = email_confirmation_sent_on
         self.email_confirmed = False
@@ -133,6 +134,7 @@ class Project(db.Model):
     feedbacktype = db.Column(db.Enum(FeedbackType), default=FeedbackType.NONE, nullable=False)
     visualizationtype = db.Column(db.Enum(VisualizationType), default=VisualizationType.SPECTROGRAM, nullable=False)
     allowRegions = db.Column(db.Boolean, nullable=False)
+    allowMultitag = db.Column(db.Boolean, nullable=False)
     n_annotations_per_file = db.Column(db.Integer, nullable=True)
     annotationtags = db.relationship('AnnotationTag',
                                      secondary=annotationtag_project_rel,
